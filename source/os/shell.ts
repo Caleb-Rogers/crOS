@@ -73,6 +73,30 @@ module TSOS {
                                   "<string> - Sets the prompt.");
             this.commandList[this.commandList.length] = sc;
 
+            // date
+            sc = new ShellCommand(this.shellDate,
+                "date",
+                "- Displays the current date and time.");
+            this.commandList[this.commandList.length] = sc;
+
+            // whereami
+            sc = new ShellCommand(this.shellWhere,
+                "whereami",
+                "- Displays the users current location");
+            this.commandList[this.commandList.length] = sc;
+
+            // TBD shell command
+            sc = new ShellCommand(this.shellSomethingElse,
+                "somethingelse",
+                "- Displays something else");
+            this.commandList[this.commandList.length] = sc;
+
+            // status <string>
+            sc = new ShellCommand(this.shellStatus,
+                "status",
+                "<string> - Sets the status in host display.");
+            this.commandList[this.commandList.length] = sc;
+
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
 
@@ -235,6 +259,27 @@ module TSOS {
                         _StdOut.putText("Help displays a list of (hopefully) valid commands.");
                         break;
                     // TODO: Make descriptive MANual page entries for the the rest of the shell commands here.
+                    case "ver":
+                        _StdOut.putText("The VERsion command displays the current version of the currently running browser-based OS");
+                        break;
+                    case "shutdown":
+                        _StdOut.putText('"Safe" Shutdown stops the browser-based OS but leaves the system processing the browser to be untouched');
+                        break;
+                    case "cls":
+                        _StdOut.putText("The cls command clears the browser-based OS terminal, leaving a clean slate for new commands");
+                        break;
+                    case "man":
+                        _StdOut.putText('The MANual command requires a "topic" string, like help, to receive further description of a command');
+                        break;
+                    case "trace":
+                        _StdOut.putText("The host log of the running OS is constantly idling while Trace is on. Turn Trace off to save CPU consumption");
+                        break;
+                    case "rot13":
+                        _StdOut.putText("rot13 is a Caesar cipher that replaces each letter of an entered string with a letter 13 letters down the alphabet. Enter a random string and then enter the command again with the output of the first command and sse what happens ;) (26 letters in the alphabet)");
+                        break;
+                    case "prompt":
+                        _StdOut.putText("Prompt uses an entered string and displays that value before every command thereafter");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -279,6 +324,27 @@ module TSOS {
         public shellPrompt(args: string[]) {
             if (args.length > 0) {
                 _OsShell.promptStr = args[0];
+            } else {
+                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+            }
+        }
+
+        public shellDate(args: string[]) {
+            let dateTime = new Date()
+            _StdOut.putText("Current date and time: " + dateTime);
+        }
+
+        public shellWhere(args: string[]) {
+            _StdOut.putText("Madison Square Garden");
+        }
+
+        public shellSomethingElse(args: string[]) {
+            _StdOut.putText("Something else interesting and creative...");
+        }
+
+        public shellStatus(args: string[]) {
+            if (args.length > 0) {
+                (document.getElementById("status")).innerHTML=args[0];
             } else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }

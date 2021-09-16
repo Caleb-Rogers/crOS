@@ -39,6 +39,14 @@
 
 <div id="divMain" style="width:100%;">
 
+   <div id="hostHeader">
+      <h3>
+         Date: <span id="date" style="display:inline; text-align: left;"></span>
+         Time: <span id="time" style="display:inline; text-align: middle;"></span>
+         Status: <span id="status" style="display:inline; text-align: right;"></span>
+      </h3>
+   </div>
+
    <div id="divButtonBar" style="margin:4px;">
       <input type="button"
              id = "btnStartOS"
@@ -66,6 +74,10 @@
              tabindex="2"
              onclick="TSOS.Control.hostBtnReset_click(this);">
    </div>
+
+   <h1 class="status...">
+
+   </h1>
 
    <div id="divConsole" style="margin:4px; width:500px; height:500px; float:left;">
       <canvas id="display"

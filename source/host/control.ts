@@ -93,6 +93,14 @@ module TSOS {
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
+
+            // ... also get that date, time, and status 
+            var today = new Date().toLocaleDateString();
+            var runningTime = new Date().toLocaleTimeString();
+            var currentStat = "We have tip off!";
+            (document.getElementById("date")).innerHTML=today;
+            (document.getElementById("time")).innerHTML=runningTime;
+            (document.getElementById("status")).innerHTML=currentStat;
         }
 
         public static hostBtnHaltOS_click(btn): void {
@@ -107,7 +115,9 @@ module TSOS {
 
         public static hostBtnReset_click(btn): void {
             // The easiest and most thorough way to do this is to reload (not refresh) the document.
-            location.reload(true);
+
+            location.reload(); // true in parameters?
+            
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
