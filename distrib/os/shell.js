@@ -51,7 +51,7 @@ var TSOS;
             // whereami
             sc = new TSOS.ShellCommand(this.shellWhere, "whereami", "- Displays the users current location");
             this.commandList[this.commandList.length] = sc;
-            // TBD shell command
+            // pie
             sc = new TSOS.ShellCommand(this.shellPie, "pie", "<number> - Hungry for math?");
             this.commandList[this.commandList.length] = sc;
             // status <string>
@@ -59,6 +59,9 @@ var TSOS;
             this.commandList[this.commandList.length] = sc;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Verifies values entered in the User Program Input");
+            this.commandList[this.commandList.length] = sc;
+            // BSOD
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Tread lightly... you're playing with fire");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -290,7 +293,7 @@ var TSOS;
         Shell.prototype.shellPie = function (args) {
             if (args.length > 0) {
                 var attemptPi = args[0];
-                if (attemptPi[12] == "3.1415926535") {
+                if (attemptPi[12] == "3.14159265") {
                     _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward... \N \
                     MORE PIE!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
                 }
@@ -311,19 +314,25 @@ var TSOS;
             }
         };
         Shell.prototype.shellLoad = function (args) {
-            if (args.length > 0) {
-                var ProgInput = document.getElementById("taProgramInput").innerText;
-                _StdOut.putText(ProgInput);
-                if (ProgInput.match("[0-9A-F]+")) {
-                    _StdOut.putText("Appropriate values were entered into the User Program Input");
-                }
-                else {
-                    _StdOut.putText("Only hexadecimal values are accepted in the User Program Input");
-                }
+            // get user input
+            var ProgInput = document.getElementById("taProgramInput").innerHTML; // how to get user input?
+            // remove whitespace
+            ProgInput = ProgInput.replace(/ +/g, ""); // or s.replace(/\s+/g, ''); or s.replace(/\s/g, '');
+            // print
+            _StdOut.putText("User Program Input:" + ProgInput);
+            // validate hex
+            /*
+            if (ProgInput.match("[0-9A-F]+")) {     // '^[a-fA-F0-9]+$' or ^(0x|0X)?[a-fA-F0-9]+$' or ^[A-Fa-f0-9]+$
+                _StdOut.putText("Appropriate values were entered into the User Program Input");
             }
             else {
-                _StdOut.putText("Please supply hexadecimal values into the User Program Input");
+                _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
             }
+            */
+        };
+        Shell.prototype.shellBSOD = function (args) {
+            var msg = "Uh oh... well, even though it was a test, you done f%$ked up";
+            _Kernel.krnTrapError(msg);
         };
         return Shell;
     }());

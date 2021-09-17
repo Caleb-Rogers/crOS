@@ -122,5 +122,14 @@ module TSOS {
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
         }
+
+        public static BSOD(msg): void {
+            document.getElementById("display").style.background = "Blue";
+            _Console.clearScreen();
+            _Console.resetXY();
+            _StdOut.putText("[BSOD ERROR]: " + msg);
+            _Kernel.krnShutdown();
+            clearInterval(_hardwareClockID);
+        }
     }
 }
