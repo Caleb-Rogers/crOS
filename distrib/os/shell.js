@@ -52,10 +52,13 @@ var TSOS;
             sc = new TSOS.ShellCommand(this.shellWhere, "whereami", "- Displays the users current location");
             this.commandList[this.commandList.length] = sc;
             // TBD shell command
-            sc = new TSOS.ShellCommand(this.shellSomethingElse, "somethingelse", "- Displays something else");
+            sc = new TSOS.ShellCommand(this.shellPie, "pie", "<number> - Hungry for math?");
             this.commandList[this.commandList.length] = sc;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets the status in host display.");
+            this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Verifies values entered in the User Program Input");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -253,7 +256,7 @@ var TSOS;
                         _StdOut.putText("Trace OFF");
                         break;
                     default:
-                        _StdOut.putText("Invalid arguement.  Usage: trace <on | off>.");
+                        _StdOut.putText("Invalid argument.  Usage: trace <on | off>.");
                 }
             }
             else {
@@ -284,15 +287,42 @@ var TSOS;
         Shell.prototype.shellWhere = function (args) {
             _StdOut.putText("Madison Square Garden");
         };
-        Shell.prototype.shellSomethingElse = function (args) {
-            _StdOut.putText("Something else interesting and creative...");
+        Shell.prototype.shellPie = function (args) {
+            if (args.length > 0) {
+                var attemptPi = args[0];
+                if (attemptPi[12] == "3.1415926535") {
+                    _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward... \N \
+                    MORE PIE!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
+                }
+                else {
+                    _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(");
+                }
+            }
+            else {
+                _StdOut.putText("Please supply pi after pie");
+            }
         };
         Shell.prototype.shellStatus = function (args) {
             if (args.length > 0) {
                 (document.getElementById("status")).innerHTML = args[0];
             }
             else {
-                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
+            }
+        };
+        Shell.prototype.shellLoad = function (args) {
+            if (args.length > 0) {
+                var ProgInput = document.getElementById("taProgramInput").innerText;
+                _StdOut.putText(ProgInput);
+                if (ProgInput.match("[0-9A-F]+")) {
+                    _StdOut.putText("Appropriate values were entered into the User Program Input");
+                }
+                else {
+                    _StdOut.putText("Only hexadecimal values are accepted in the User Program Input");
+                }
+            }
+            else {
+                _StdOut.putText("Please supply hexadecimal values into the User Program Input");
             }
         };
         return Shell;
