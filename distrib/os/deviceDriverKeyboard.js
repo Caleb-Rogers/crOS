@@ -54,13 +54,65 @@ var TSOS;
                 else {
                     chr = String.fromCharCode(keyCode + 32); // Lowercase a-z
                 }
-                // TODO: Check for caps-lock and handle as shifted if so.
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (((keyCode >= 48) && (keyCode <= 57)) || // digits
-                (keyCode == 32) || // space
-                (keyCode == 13)) { // enter
+            else if (((keyCode == 32) || (keyCode == 13) || (keyCode == 8) || (keyCode == 9))) { // space & enter & backspace & tab
                 chr = String.fromCharCode(keyCode);
+                _KernelInputQueue.enqueue(chr);
+            }
+            else if (keyCode == 38) { // up arrow
+                chr = "upArrow";
+                _KernelInputQueue.enqueue(chr);
+            }
+            else if (keyCode == 40) { // down arrow
+                chr = "downArrow";
+                _KernelInputQueue.enqueue(chr);
+            }
+            else if ((keyCode >= 48) && (keyCode <= 57)) { // digits & symbols...
+                switch (keyCode) {
+                    case (48):
+                        if (isShifted === true) {
+                            chr = String.fromCharCode(keyCode - 7); // ")"
+                        }
+                        else {
+                            chr = String.fromCharCode(keyCode); // "0"
+                        }
+                        break;
+                    case (49):
+                        if (isShifted === true) {
+                            chr = String.fromCharCode(keyCode - 16); // "!"
+                        }
+                        else {
+                            chr = String.fromCharCode(keyCode); // "1"
+                        }
+                        break;
+                    case (50):
+                        if (isShifted === true) {
+                            chr = String.fromCharCode(keyCode + 14); // "@"
+                        }
+                        else {
+                            chr = String.fromCharCode(keyCode); // "2"
+                        }
+                        break;
+                    case (51):
+                        if (isShifted === true) {
+                            chr = String.fromCharCode(keyCode - 16); // "#"
+                        }
+                        else {
+                            chr = String.fromCharCode(keyCode); // "3"
+                        }
+                        break;
+                    case (52):
+                        if (isShifted === true) {
+                            chr = String.fromCharCode(keyCode - 16); // "$"
+                        }
+                        else {
+                            chr = String.fromCharCode(keyCode); // "4"
+                        }
+                        break;
+                    // repeat for all symbols... busy work
+                }
+                // Add selected character to queue to be used
                 _KernelInputQueue.enqueue(chr);
             }
         };
