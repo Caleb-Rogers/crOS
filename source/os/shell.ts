@@ -374,25 +374,34 @@ module TSOS {
         }
 
         public shellLoad(args: string[]) {
-            var user_input = <HTMLTextAreaElement>document.getElementById("taProgramInput")["value"];
-            console.log(user_input);
-            // remove whitespace
-            //user_input = user_input.replace(/ +/g, ""); // or s.replace(/\s+/g, ''); or s.replace(/\s/g, '');
-            // print
-            _StdOut.putText("User Program Input:" + user_input);
+            // Retrieve user input and remove whitespace
+            var user_input = document.getElementById("taProgramInput")["value"];
+            user_input = user_input.replace(/ +/g, "").toUpperCase();
             // validate hex
-            /*
-            if (ProgInput.match("[0-9A-F]+")) {     // '^[a-fA-F0-9]+$' or ^(0x|0X)?[a-fA-F0-9]+$' or ^[A-Fa-f0-9]+$
+            var isHexTrue:boolean = false;
+            for (var i=0; i<user_input.length; i++) {
+                if (user_input[i] != "A" && user_input[i] != "B" && user_input[i] != "C" && user_input[i] != "D" 
+                 && user_input[i] != "E" && user_input[i] != "F" && user_input[i] != "0" && user_input[i] != "1" 
+                 && user_input[i] != "2" && user_input[i] != "3" && user_input[i] != "4" && user_input[i] != "5" 
+                 && user_input[i] != "6" && user_input[i] != "7" && user_input[i] != "8" && user_input[i] != "9") {
+                    isHexTrue = false;
+                    break;
+                }
+                else {
+                    isHexTrue = true;
+                }
+            }
+            if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
             }
-            */
+            console.log("User Program Input: " + user_input);
         }
 
         public shellBSOD(args: string[]) {
-            var msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
+            let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
             _Kernel.krnTrapError(msg);
         }
     }
