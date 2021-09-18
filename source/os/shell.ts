@@ -374,12 +374,12 @@ module TSOS {
         }
 
         public shellLoad(args: string[]) {
-            // get user input
-            var ProgInput:string = document.getElementById("taProgramInput").innerHTML; // how to get user input?
+            var user_input = <HTMLTextAreaElement>document.getElementById("taProgramInput")["value"];
+            console.log(user_input);
             // remove whitespace
-            ProgInput = ProgInput.replace(/ +/g, ""); // or s.replace(/\s+/g, ''); or s.replace(/\s/g, '');
+            //user_input = user_input.replace(/ +/g, ""); // or s.replace(/\s+/g, ''); or s.replace(/\s/g, '');
             // print
-            _StdOut.putText("User Program Input:" + ProgInput);
+            _StdOut.putText("User Program Input:" + user_input);
             // validate hex
             /*
             if (ProgInput.match("[0-9A-F]+")) {     // '^[a-fA-F0-9]+$' or ^(0x|0X)?[a-fA-F0-9]+$' or ^[A-Fa-f0-9]+$

@@ -86,6 +86,9 @@ module TSOS {
             } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
             }
+
+            // Dynamically update host display time
+            Control.dynamicHostTime();
         }
 
 
@@ -171,7 +174,6 @@ module TSOS {
             Control.hostLog("OS ERROR - TRAP: " + msg);
             // TODO: Display error on console, perhaps in some sort of colored screen. (Maybe blue?)
             Control.BSOD(msg);
-
             this.krnShutdown();
         }
     }

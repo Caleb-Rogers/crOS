@@ -77,13 +77,13 @@ var TSOS;
             // .. and call the OS Kernel Bootstrap routine.
             _Kernel = new TSOS.Kernel();
             _Kernel.krnBootstrap(); // _GLaDOS.afterStartup() will get called in there, if configured.
-            // ... also get that date, time, and status 
+            // Set initial host display upon starting system 
             var today = new Date().toLocaleDateString();
             var runningTime = new Date().toLocaleTimeString();
             var currentStat = "We have tip off!";
-            (document.getElementById("date")).innerHTML = today;
-            (document.getElementById("time")).innerHTML = runningTime;
-            (document.getElementById("status")).innerHTML = currentStat;
+            document.getElementById("date").innerHTML = today;
+            document.getElementById("time").innerHTML = runningTime;
+            document.getElementById("status").innerHTML = currentStat;
         };
         Control.hostBtnHaltOS_click = function (btn) {
             Control.hostLog("Emergency halt", "host");
@@ -100,6 +100,10 @@ var TSOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        };
+        Control.dynamicHostTime = function () {
+            var runningTime = new Date().toLocaleTimeString();
+            document.getElementById("time").innerHTML = runningTime;
         };
         Control.BSOD = function (msg) {
             document.getElementById("display").style.background = "Blue";

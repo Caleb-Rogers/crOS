@@ -81,6 +81,17 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
+            // Save current Y position and check if need scrolled
+            var positionY_line = this.currentYPosition;
+            if (this.currentYPosition > _Canvas.height) {
+                // Snapshot canvas and clear
+                var console_snapshot = _DrawingContext.getImageData(0, 0, _Canvas.width, positionY_line + 1);
+                this.clearScreen();
+                // Post snapshot 1 index above Y position
+                var positionY_difference = this.currentYPosition - _Canvas.height + 1;
+                _DrawingContext.putImageData(console_snapshot, 0, -positionY_difference);
+                this.currentYPosition -= positionY_difference;
+            }
         }
     }
  }
