@@ -41,7 +41,19 @@ module TSOS {
                     _OsShell.handleInput(this.buffer);
                     // ... and reset our buffer.
                     this.buffer = "";
-                } else {
+                }
+                else if (chr === String.fromCharCode(8)) { // handle backspace
+                    if (this.buffer) {
+                        // Determine distance to delete
+                        var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                        var y_distance = this.currentYPosition - _DefaultFontSize;
+                        // Delete character, update x-axis and update buffer
+                        _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+                        this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                        this.buffer = this.buffer.slice(0, -1);
+                    }
+                }
+                else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
                     this.putText(chr);

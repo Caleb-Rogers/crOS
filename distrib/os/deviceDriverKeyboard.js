@@ -56,12 +56,17 @@ var TSOS;
                 }
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (keyCode == 32 || keyCode == 13 || keyCode == 9 ||
-                keyCode == 8 || keyCode == 38 || keyCode == 40) {
+            else if (keyCode == 32 // space
+                || keyCode == 13 // enter
+                || keyCode == 9 // tab
+                || keyCode == 8 // backspace
+                || keyCode == 38 // up arrow
+                || keyCode == 40) // down arrow
+             {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (keyCode >= 48 && keyCode <= 57) {
+            else if (keyCode >= 48 && keyCode <= 57) { // digits and shifted symbols
                 if (isShifted == true) {
                     switch (keyCode) {
                         case 48:
@@ -101,7 +106,8 @@ var TSOS;
                 }
                 _KernelInputQueue.enqueue(chr);
             }
-            else if ((keyCode == 59) || (keyCode == 61) || (keyCode == 173) || (keyCode >= 186 && keyCode <= 192) || (keyCode >= 219 && keyCode <= 222)) {
+            else if ((keyCode == 59) || (keyCode == 61) || (keyCode == 173) ||
+                (keyCode >= 188 && keyCode <= 192) || (keyCode >= 219 && keyCode <= 222)) { // special characters 
                 switch (keyCode) {
                     case 59:
                         if (isShifted) {
@@ -192,7 +198,6 @@ var TSOS;
                         }
                         break;
                 }
-                console.log("Key Code: " + keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
         };
