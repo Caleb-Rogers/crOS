@@ -56,63 +56,143 @@ var TSOS;
                 }
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (((keyCode == 32) || (keyCode == 13) || (keyCode == 8) || (keyCode == 9))) { // space & enter & backspace & tab
+            else if (keyCode == 32 || keyCode == 13 || keyCode == 9 ||
+                keyCode == 8 || keyCode == 38 || keyCode == 40) {
                 chr = String.fromCharCode(keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
-            else if (keyCode == 38) { // up arrow
-                chr = "upArrow";
-                _KernelInputQueue.enqueue(chr);
-            }
-            else if (keyCode == 40) { // down arrow
-                chr = "downArrow";
-                _KernelInputQueue.enqueue(chr);
-            }
-            else if ((keyCode >= 48) && (keyCode <= 57)) { // digits & symbols...
-                switch (keyCode) {
-                    case (48):
-                        if (isShifted === true) {
-                            chr = String.fromCharCode(keyCode - 7); // ")"
-                        }
-                        else {
-                            chr = String.fromCharCode(keyCode); // "0"
-                        }
-                        break;
-                    case (49):
-                        if (isShifted === true) {
-                            chr = String.fromCharCode(keyCode - 16); // "!"
-                        }
-                        else {
-                            chr = String.fromCharCode(keyCode); // "1"
-                        }
-                        break;
-                    case (50):
-                        if (isShifted === true) {
-                            chr = String.fromCharCode(keyCode + 14); // "@"
-                        }
-                        else {
-                            chr = String.fromCharCode(keyCode); // "2"
-                        }
-                        break;
-                    case (51):
-                        if (isShifted === true) {
-                            chr = String.fromCharCode(keyCode - 16); // "#"
-                        }
-                        else {
-                            chr = String.fromCharCode(keyCode); // "3"
-                        }
-                        break;
-                    case (52):
-                        if (isShifted === true) {
-                            chr = String.fromCharCode(keyCode - 16); // "$"
-                        }
-                        else {
-                            chr = String.fromCharCode(keyCode); // "4"
-                        }
-                        break;
-                    // repeat for all symbols... busy work
+            else if (keyCode >= 48 && keyCode <= 57) {
+                if (isShifted == true) {
+                    switch (keyCode) {
+                        case 48:
+                            chr = ")";
+                            break;
+                        case 49:
+                            chr = "!";
+                            break;
+                        case 50:
+                            chr = "@";
+                            break;
+                        case 51:
+                            chr = "#";
+                            break;
+                        case 52:
+                            chr = "$";
+                            break;
+                        case 53:
+                            chr = "%";
+                            break;
+                        case 54:
+                            chr = "^";
+                            break;
+                        case 55:
+                            chr = "&";
+                            break;
+                        case 56:
+                            chr = "*";
+                            break;
+                        case 57:
+                            chr = "(";
+                            break;
+                    }
                 }
-                // Add selected character to queue to be used
+                else {
+                    chr = String.fromCharCode(keyCode);
+                }
+                _KernelInputQueue.enqueue(chr);
+            }
+            else if ((keyCode == 59) || (keyCode == 61) || (keyCode == 173) || (keyCode >= 186 && keyCode <= 192) || (keyCode >= 219 && keyCode <= 222)) {
+                switch (keyCode) {
+                    case 59:
+                        if (isShifted) {
+                            chr = ":";
+                        }
+                        else {
+                            chr = ";";
+                        }
+                        break;
+                    case 61:
+                        if (isShifted) {
+                            chr = "+";
+                        }
+                        else {
+                            chr = "=";
+                        }
+                        break;
+                    case 173:
+                        if (isShifted) {
+                            chr = "_";
+                        }
+                        else {
+                            chr = "-";
+                        }
+                        break;
+                    case 188:
+                        if (isShifted) {
+                            chr = "<";
+                        }
+                        else {
+                            chr = ",";
+                        }
+                        break;
+                    case 190:
+                        if (isShifted) {
+                            chr = ">";
+                        }
+                        else {
+                            chr = ".";
+                        }
+                        break;
+                    case 191:
+                        if (isShifted) {
+                            chr = "?";
+                        }
+                        else {
+                            chr = "/";
+                        }
+                        break;
+                    case 192:
+                        if (isShifted) {
+                            chr = "~";
+                        }
+                        else {
+                            chr = "`";
+                        }
+                        break;
+                    case 219:
+                        if (isShifted) {
+                            chr = "{";
+                        }
+                        else {
+                            chr = "[";
+                        }
+                        break;
+                    case 220:
+                        if (isShifted) {
+                            chr = "|";
+                        }
+                        else {
+                            chr = "\\";
+                        }
+                        break;
+                    case 221:
+                        if (isShifted) {
+                            chr = "}";
+                        }
+                        else {
+                            chr = "]";
+                        }
+                        break;
+                    case 222:
+                        if (isShifted) {
+                            chr = '"';
+                        }
+                        else {
+                            chr = "'";
+                        }
+                        break;
+                }
+                console.log("Key Code: " + keyCode);
                 _KernelInputQueue.enqueue(chr);
             }
         };
