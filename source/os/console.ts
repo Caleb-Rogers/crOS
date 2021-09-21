@@ -15,7 +15,8 @@ module TSOS {
                     public currentYPosition = _DefaultFontSize,
                     public buffer = "",
                     public oldCommandsArr = [""],
-                    public oldCommandsIndex = 0) {
+                    public oldCommandsIndex = 0,
+                    public similarCommands = []) {
         }
 
         public init(): void {
@@ -86,7 +87,7 @@ module TSOS {
                         if(this.oldCommandsIndex == this.oldCommandsArr.length) {
                             this.oldCommandsIndex = 0;
                         }
-                        // Clear line 
+                        // Clear line                                         
                         while (this.buffer.length > 0) {
                             var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
                             var y_distance = this.currentYPosition - _DefaultFontSize;
@@ -97,6 +98,39 @@ module TSOS {
                         this.oldCommandsIndex++;
                         this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
+                    }
+                }
+                else if (chr === String.fromCharCode(9)) { // handle tab
+                    // validate for something typed
+                    if (this.buffer.length > 0) {
+                        // nested loop to find all possible commands to current buffer
+                        for (var j=0; j<_OsShell.commandList.length; j++) {
+                            for (var i=0; i<this.buffer.length; i++) {
+                                if (_OsShell.commandList[i].command[j] == this.buffer[j]) {
+                                    this.similarCommands[i] = _OsShell.commandList[i].command;
+                                }
+                                // if no similar commands
+                                if (this.similarCommands.length == 0) {
+                                    break;
+                                }
+                                // if matching command, clear line and print
+                                else if (this.similarCommands.length == 1) {
+                                    // Clear line                                         
+                                    while (this.buffer.length > 0) {
+                                        var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                                        var y_distance = this.currentYPosition - _DefaultFontSize;
+                                        _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+                                        this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                                        this.buffer = this.buffer.slice(0, -1);
+                                    }
+                                    this.buffer = this.similarCommands[0].command;
+                                    console.log("Buffer: " + this.buffer);
+                                    this.putText(this.buffer);
+                                    break;
+                                }
+                            }
+
+                        }
                     }
                 }
                 else {
