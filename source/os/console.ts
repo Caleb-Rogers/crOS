@@ -45,8 +45,6 @@ module TSOS {
                     // add to command history
                     this.oldCommandsArr.push(this.buffer);
                     this.oldCommandsIndex = this.oldCommandsArr.length;
-                    console.log(this.oldCommandsArr);
-                    console.log(this.oldCommandsIndex);
 
                     // ... and reset our buffer.
                     this.buffer = "";
@@ -70,26 +68,36 @@ module TSOS {
                         }
                         // Clear line 
                         while (this.buffer.length > 0) {
-                            // need to implement way to clear line and print next old command
+                            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                            var y_distance = this.currentYPosition - _DefaultFontSize;
+                            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+                            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                            this.buffer = this.buffer.slice(0, -1);
                         }
-                        this.buffer = "";
                         this.oldCommandsIndex--;
                         this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
                     }
-                        // clear current buffer
-                        // move index back in old command array
-                        // print old command
-                        // place (now) new command into buffer; ready for enter key
 
                 }
                 else if (chr === String.fromCharCode(40)) { // command history - down arrow
-                    // validation - array of old commands not empty
-                        // clear current buffer
-                        // move index back in old command array
-                        // print old command
-                        // place (now) new command into buffer; ready for enter key
-
+                    // Validate old command list for if isn't full and reset index if needed
+                    if (this.oldCommandsArr.length > 0) {
+                        if(this.oldCommandsIndex == this.oldCommandsArr.length) {
+                            this.oldCommandsIndex = 0;
+                        }
+                        // Clear line 
+                        while (this.buffer.length > 0) {
+                            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                            var y_distance = this.currentYPosition - _DefaultFontSize;
+                            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+                            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
+                            this.buffer = this.buffer.slice(0, -1);
+                        }
+                        this.oldCommandsIndex++;
+                        this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
+                    }
                 }
                 else {
                     // This is a "normal" character, so ...
