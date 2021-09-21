@@ -9,15 +9,15 @@
 // TODO: Write a base class / prototype for system services and let Shell inherit from it.
 var TSOS;
 (function (TSOS) {
-    var Shell = /** @class */ (function () {
-        function Shell() {
+    class Shell {
+        constructor() {
             // Properties
             this.promptStr = ">";
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
         }
-        Shell.prototype.init = function () {
+        init() {
             var sc;
             //
             // Load the command list.
@@ -67,11 +67,11 @@ var TSOS;
             // kill <id> - kills the specified process id.
             // Display the initial prompt.
             this.putPrompt();
-        };
-        Shell.prototype.putPrompt = function () {
+        }
+        putPrompt() {
             _StdOut.putText(this.promptStr);
-        };
-        Shell.prototype.handleInput = function (buffer) {
+        }
+        handleInput(buffer) {
             _Kernel.krnTrace("Shell Command~" + buffer);
             //
             // Parse the input...
@@ -113,9 +113,9 @@ var TSOS;
                     this.execute(this.shellInvalidCommand);
                 }
             }
-        };
+        }
         // Note: args is an optional parameter, ergo the ? which allows TypeScript to understand that.
-        Shell.prototype.execute = function (fn, args) {
+        execute(fn, args) {
             // We just got a command, so advance the line...
             _StdOut.advanceLine();
             // ... call the command function passing in the args with some über-cool functional programming ...
@@ -126,8 +126,8 @@ var TSOS;
             }
             // ... and finally write the prompt again.
             this.putPrompt();
-        };
-        Shell.prototype.parseInput = function (buffer) {
+        }
+        parseInput(buffer) {
             var retVal = new TSOS.UserCommand();
             // 1. Remove leading and trailing spaces.
             buffer = TSOS.Utils.trim(buffer);
@@ -149,12 +149,12 @@ var TSOS;
                 }
             }
             return retVal;
-        };
+        }
         //
         // Shell Command Functions. Kinda not part of Shell() class exactly, but
         // called from here, so kept here to avoid violating the law of least astonishment.
         //
-        Shell.prototype.shellInvalidCommand = function () {
+        shellInvalidCommand() {
             _StdOut.putText("Invalid Command. ");
             if (_SarcasticMode) {
                 _StdOut.putText("Unbelievable. You, [subject name here],");
@@ -164,14 +164,14 @@ var TSOS;
             else {
                 _StdOut.putText("Type 'help' for, well... help.");
             }
-        };
-        Shell.prototype.shellCurse = function () {
+        }
+        shellCurse() {
             _StdOut.putText("Oh, so that's how it's going to be, eh? Fine.");
             _StdOut.advanceLine();
             _StdOut.putText("Bitch.");
             _SarcasticMode = true;
-        };
-        Shell.prototype.shellApology = function () {
+        }
+        shellApology() {
             if (_SarcasticMode) {
                 _StdOut.putText("I think we can put our differences behind us.");
                 _StdOut.advanceLine();
@@ -181,30 +181,30 @@ var TSOS;
             else {
                 _StdOut.putText("For what?");
             }
-        };
+        }
         // Although args is unused in some of these functions, it is always provided in the 
         // actual parameter list when this function is called, so I feel like we need it.
-        Shell.prototype.shellVer = function (args) {
+        shellVer(args) {
             _StdOut.putText(APP_NAME + " version " + APP_VERSION);
-        };
-        Shell.prototype.shellHelp = function (args) {
+        }
+        shellHelp(args) {
             _StdOut.putText("Commands:");
             for (var i in _OsShell.commandList) {
                 _StdOut.advanceLine();
                 _StdOut.putText("  " + _OsShell.commandList[i].command + " " + _OsShell.commandList[i].description);
             }
-        };
-        Shell.prototype.shellShutdown = function (args) {
+        }
+        shellShutdown(args) {
             _StdOut.putText("Shutting down...");
             // Call Kernel shutdown routine.
             _Kernel.krnShutdown();
             // TODO: Stop the final prompt from being displayed. If possible. Not a high priority. (Damn OCD!)
-        };
-        Shell.prototype.shellCls = function (args) {
+        }
+        shellCls(args) {
             _StdOut.clearScreen();
             _StdOut.resetXY();
-        };
-        Shell.prototype.shellMan = function (args) {
+        }
+        shellMan(args) {
             if (args.length > 0) {
                 var topic = args[0];
                 switch (topic) {
@@ -240,8 +240,8 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: man <topic>  Please supply a topic.");
             }
-        };
-        Shell.prototype.shellTrace = function (args) {
+        }
+        shellTrace(args) {
             if (args.length > 0) {
                 var setting = args[0];
                 switch (setting) {
@@ -265,8 +265,8 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: trace <on | off>");
             }
-        };
-        Shell.prototype.shellRot13 = function (args) {
+        }
+        shellRot13(args) {
             if (args.length > 0) {
                 // Requires Utils.ts for rot13() function.
                 _StdOut.putText(args.join(' ') + " = '" + TSOS.Utils.rot13(args.join(' ')) + "'");
@@ -274,28 +274,28 @@ var TSOS;
             else {
                 _StdOut.putText("Usage: rot13 <string>  Please supply a string.");
             }
-        };
-        Shell.prototype.shellPrompt = function (args) {
+        }
+        shellPrompt(args) {
             if (args.length > 0) {
                 _OsShell.promptStr = args[0];
             }
             else {
                 _StdOut.putText("Usage: prompt <string>  Please supply a string.");
             }
-        };
-        Shell.prototype.shellDate = function (args) {
-            var dateTime = new Date();
+        }
+        shellDate(args) {
+            let dateTime = new Date();
             _StdOut.putText("Current date and time: " + dateTime);
-        };
-        Shell.prototype.shellWhere = function (args) {
+        }
+        shellWhere(args) {
             _StdOut.putText("Madison Square Garden");
-        };
-        Shell.prototype.shellPie = function (args) {
+        }
+        shellPie(args) {
             if (args.length > 0) {
                 var attemptPi = args[0];
-                if (attemptPi[12] == "3.14159265") {
+                if (attemptPi == "3.14159265") {
                     _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward... \N \
-                    MORE PIE!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
+                    MORE PI!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679...");
                 }
                 else {
                     _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(");
@@ -304,16 +304,16 @@ var TSOS;
             else {
                 _StdOut.putText("Please supply pi after pie");
             }
-        };
-        Shell.prototype.shellStatus = function (args) {
+        }
+        shellStatus(args) {
             if (args.length > 0) {
                 (document.getElementById("status")).innerHTML = args[0];
             }
             else {
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
-        };
-        Shell.prototype.shellLoad = function (args) {
+        }
+        shellLoad(args) {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
             user_input = user_input.replace(/ +/g, "").toUpperCase();
@@ -338,12 +338,13 @@ var TSOS;
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
             }
             console.log("User Program Input: " + user_input);
-        };
-        Shell.prototype.shellBSOD = function (args) {
-            var msg = "Uh oh... well, even though it was a test, you done f%$ked up";
+        }
+        shellBSOD(args) {
+            let msg = "Uh oh... well, even though it was a test, you done f%$ked up";
             _Kernel.krnTrapError(msg);
-        };
-        return Shell;
-    }());
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
+        }
+    }
     TSOS.Shell = Shell;
 })(TSOS || (TSOS = {}));
+//# sourceMappingURL=shell.js.map

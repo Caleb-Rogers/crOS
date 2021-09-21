@@ -352,15 +352,13 @@ module TSOS {
         public shellPie(args: string[]) {
             if (args.length > 0) {
                 var attemptPi:String = args[0];
-                if (attemptPi[12] == "3.14159265") {
+                if (attemptPi == "3.14159265") {
                     _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward... \N \
-                    MORE PIE!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679");
+                    MORE PI!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679...");
+                } else {
+                    _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(");
                 }
-                else {
-                    _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(")
-                }
-            }
-            else {
+            } else {
                 _StdOut.putText("Please supply pi after pie");
             }
         }
@@ -403,6 +401,7 @@ module TSOS {
         public shellBSOD(args: string[]) {
             let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
             _Kernel.krnTrapError(msg);
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
         }
     }
 }

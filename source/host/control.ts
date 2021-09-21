@@ -130,7 +130,8 @@ module TSOS {
 
 
         public static BSOD(msg): void {
-            document.getElementById("display").style.background = "Blue";
+            document.getElementById("display").style.background = "lightblue";
+            document.getElementById("backdrop").style.background = "blue";
             _Console.clearScreen();
             _Console.resetXY();
             _StdOut.putText("[BSOD ERROR]: " + msg);

@@ -13,7 +13,9 @@ module TSOS {
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "",
+                    public oldCommandsArr = [""],
+                    public oldCommandsIndex = 0) {
         }
 
         public init(): void {
@@ -39,6 +41,13 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+
+                    // add to command history
+                    this.oldCommandsArr.push(this.buffer);
+                    this.oldCommandsIndex = this.oldCommandsArr.length;
+                    console.log(this.oldCommandsArr);
+                    console.log(this.oldCommandsIndex);
+
                     // ... and reset our buffer.
                     this.buffer = "";
                 }
@@ -52,6 +61,35 @@ module TSOS {
                         this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
                         this.buffer = this.buffer.slice(0, -1);
                     }
+                }
+                else if (chr === String.fromCharCode(38)) { // command history - up arrow
+                    // Validate old command list for if isn't full and reset index if needed
+                    if (this.oldCommandsArr.length > 0) {
+                        if(this.oldCommandsIndex == 0) {
+                            this.oldCommandsIndex = this.oldCommandsArr.length;
+                        }
+                        // Clear line 
+                        while (this.buffer.length > 0) {
+                            // need to implement way to clear line and print next old command
+                        }
+                        this.buffer = "";
+                        this.oldCommandsIndex--;
+                        this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
+                    }
+                        // clear current buffer
+                        // move index back in old command array
+                        // print old command
+                        // place (now) new command into buffer; ready for enter key
+
+                }
+                else if (chr === String.fromCharCode(40)) { // command history - down arrow
+                    // validation - array of old commands not empty
+                        // clear current buffer
+                        // move index back in old command array
+                        // print old command
+                        // place (now) new command into buffer; ready for enter key
+
                 }
                 else {
                     // This is a "normal" character, so ...
