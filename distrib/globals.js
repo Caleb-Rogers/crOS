@@ -10,12 +10,12 @@
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
-const APP_NAME = "crOS"; // Seemed fitting
-const APP_VERSION = "2.001"; // Wow, 2 decades under my belt
-const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
-const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
+var APP_NAME = "crOS"; // Seemed fitting
+var APP_VERSION = "2.001"; // Wow, 2 decades under my belt
+var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
+var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-const KEYBOARD_IRQ = 1;
+var KEYBOARD_IRQ = 1;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
@@ -51,4 +51,3 @@ var _GLaDOS = null; // If the above is linked in, this is the instantiated insta
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
 };
-//# sourceMappingURL=globals.js.map

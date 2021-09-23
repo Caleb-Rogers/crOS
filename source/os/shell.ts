@@ -299,7 +299,9 @@ module TSOS {
                         _StdOut.putText("Someone's lost. Try out this command and then you'll know! Maybe...");
                         break;
                     case "pie":
-                        _StdOut.putText("Enter 9 digits and a decimal that looks like this: '3.14159265'... help too specific? Eh, just have some pie.");
+                        _StdOut.putText("Enter 9 digits and a decimal that looks like this: '3.14159265'...");
+                        _StdOut.advanceLine();
+                        _StdOut.putText("Help too specific? Eh, just have some pie, you'll feel better");
                         break;
                     case "status":
                         _StdOut.putText("See that 'Status' up top? The one next to the 'Date' and 'Time'? Yeah you can change that");
@@ -372,8 +374,9 @@ module TSOS {
             if (args.length > 0) {
                 var attemptPi:String = args[0];
                 if (attemptPi == "3.14159265") {
-                    _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward... \N \
-                    MORE PI!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679...");
+                    _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward...");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("MORE PI!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679...");
                 } else {
                     _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(");
                 }

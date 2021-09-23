@@ -6,8 +6,15 @@
      ------------ */
 var TSOS;
 (function (TSOS) {
-    class Console {
-        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "", oldCommandsArr = [""], oldCommandsIndex = 0) {
+    var Console = /** @class */ (function () {
+        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer, oldCommandsArr, oldCommandsIndex) {
+            if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
+            if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
+            if (currentXPosition === void 0) { currentXPosition = 0; }
+            if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
+            if (buffer === void 0) { buffer = ""; }
+            if (oldCommandsArr === void 0) { oldCommandsArr = [""]; }
+            if (oldCommandsIndex === void 0) { oldCommandsIndex = 0; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
@@ -16,26 +23,26 @@ var TSOS;
             this.oldCommandsArr = oldCommandsArr;
             this.oldCommandsIndex = oldCommandsIndex;
         }
-        init() {
+        Console.prototype.init = function () {
             this.clearScreen();
             this.resetXY();
-        }
-        clearScreen() {
+        };
+        Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
-        }
-        resetXY() {
+        };
+        Console.prototype.resetXY = function () {
             this.currentXPosition = 0;
             this.currentYPosition = this.currentFontSize;
-        }
-        backspace(buffer) {
+        };
+        Console.prototype.backspace = function (buffer) {
             var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
             var y_distance = this.currentYPosition - _DefaultFontSize;
             _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
             this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
             buffer = buffer.slice(0, -1);
             return buffer;
-        }
-        handleInput() {
+        };
+        Console.prototype.handleInput = function () {
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
@@ -140,8 +147,8 @@ var TSOS;
                 }
                 // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
             }
-        }
-        putText(text) {
+        };
+        Console.prototype.putText = function (text) {
             /*  My first inclination here was to write two functions: putChar() and putString().
                 Then I remembered that JavaScript is (sadly) untyped and it won't differentiate
                 between the two. (Although TypeScript would. But we're compiling to JavaScipt anyway.)
@@ -156,8 +163,8 @@ var TSOS;
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
-        }
-        advanceLine() {
+        };
+        Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
@@ -179,8 +186,8 @@ var TSOS;
                 _DrawingContext.putImageData(console_snapshot, 0, -positionY_difference);
                 this.currentYPosition -= positionY_difference;
             }
-        }
-    }
+        };
+        return Console;
+    }());
     TSOS.Console = Console;
 })(TSOS || (TSOS = {}));
-//# sourceMappingURL=console.js.map
