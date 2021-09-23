@@ -94,13 +94,13 @@ module TSOS {
             _Kernel = new Kernel();
             _Kernel.krnBootstrap();  // _GLaDOS.afterStartup() will get called in there, if configured.
 
-            // ... also get that date, time, and status 
+            // Set initial host display upon starting system 
             var today = new Date().toLocaleDateString();
             var runningTime = new Date().toLocaleTimeString();
             var currentStat = "We have tip off!";
-            (document.getElementById("date")).innerHTML=today;
-            (document.getElementById("time")).innerHTML=runningTime;
-            (document.getElementById("status")).innerHTML=currentStat;
+            document.getElementById("date").innerHTML=today;
+            document.getElementById("time").innerHTML=runningTime;
+            document.getElementById("status").innerHTML=currentStat;
         }
 
         public static hostBtnHaltOS_click(btn): void {
@@ -121,6 +121,21 @@ module TSOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+
+        public static dynamicHostTime(): void {
+            var runningTime = new Date().toLocaleTimeString();
+            document.getElementById("time").innerHTML=runningTime;
+        }
+
+        public static BSOD(msg): void {
+            document.getElementById("display").style.background = "lightblue";
+            document.getElementById("backdrop").style.background = "blue";
+            _Console.clearScreen();
+            _Console.resetXY();
+            _StdOut.putText("[BSOD ERROR]: " + msg);
+            _Kernel.krnShutdown();
+            clearInterval(_hardwareClockID);
         }
     }
 }

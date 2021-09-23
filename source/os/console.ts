@@ -13,7 +13,9 @@ module TSOS {
                     public currentFontSize = _DefaultFontSize,
                     public currentXPosition = 0,
                     public currentYPosition = _DefaultFontSize,
-                    public buffer = "") {
+                    public buffer = "",
+                    public oldCommandsArr = [""],
+                    public oldCommandsIndex = 0) {
         }
 
         public init(): void {
@@ -30,6 +32,15 @@ module TSOS {
             this.currentYPosition = this.currentFontSize;
         }
 
+        public backspace(buffer): string {
+            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
+            var y_distance = this.currentYPosition - _DefaultFontSize;
+            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
+            buffer = buffer.slice(0, -1);
+            return buffer;
+        }
+
         public handleInput(): void {
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
@@ -39,9 +50,98 @@ module TSOS {
                     // The enter key marks the end of a console command, so ...
                     // ... tell the shell ...
                     _OsShell.handleInput(this.buffer);
+
+                    // add to command history
+                    this.oldCommandsArr.push(this.buffer);
+                    this.oldCommandsIndex = this.oldCommandsArr.length;
+
                     // ... and reset our buffer.
                     this.buffer = "";
-                } else {
+                }
+                else if (chr === String.fromCharCode(8)) { // handle backspace
+                    if (this.buffer) {
+                        this.buffer = this.backspace(this.buffer);
+                    }
+                }
+                else if (chr === String.fromCharCode(38)) { // command history - up arrow
+                    // Validate old command list for if isn't full and reset index if needed
+                    if (this.oldCommandsArr.length > 0) {
+                        if(this.oldCommandsIndex == 0) {
+                            this.oldCommandsIndex = this.oldCommandsArr.length;
+                        }
+                        while (this.buffer.length > 0) {
+                            this.buffer = this.backspace(this.buffer);
+                        }
+                        this.oldCommandsIndex--;
+                        console.log(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
+                    }
+
+                }
+                else if (chr === String.fromCharCode(40)) { // command history - down arrow
+                    // Validate old command list for if isn't full and reset index if needed
+                    if (this.oldCommandsArr.length > 0) {
+                        if(this.oldCommandsIndex == this.oldCommandsArr.length) {
+                            this.oldCommandsIndex = 0; 
+                            this.oldCommandsArr[this.oldCommandsIndex] = "";                           
+                        }
+                        while (this.buffer.length > 0) {
+                            this.buffer = this.backspace(this.buffer);
+                        }
+                        this.oldCommandsIndex++;
+                        console.log(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
+                        this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
+                    }
+                }
+                else if (chr === String.fromCharCode(9)) { // handle tab
+                    //var existingSimilarCommands = [_OsShell.commandList];
+                    var similarCommands = [];
+                    var y = 0;
+                    if (this.buffer.length > 0) {
+                        // Iterate through cmd list and save every matching cmd
+                        for (var x=0; x<_OsShell.commandList.length; x++) {
+                            if (_OsShell.commandList[x].command[0] == this.buffer[0]) {
+                                similarCommands[y] = _OsShell.commandList[x].command;
+                                y++;
+                            }
+                        }
+                        if (similarCommands.length == 0) {
+                            break;
+                        }
+                        else if (similarCommands.length == 1) {
+                            while (this.buffer.length > 0) {
+                                this.buffer = this.backspace(this.buffer);
+                            }
+                            this.buffer = similarCommands[0];
+                            this.putText(this.buffer);
+                            break;
+                        }
+                        else if (similarCommands.length > 1) {
+                            // Iterate through buffer
+                            for (var j=0; j<similarCommands.length; j++) {
+                                var matchCount = 0;
+                                for (var k=0; k<this.buffer.length; k++) {
+                                    console.log("cmd list: " + similarCommands[j][k]);
+                                    console.log("buffer: " + this.buffer[k]);
+                                    if (similarCommands[j][k] == this.buffer[k]) {
+                                        matchCount++;
+                                    }
+                                } // inner loop ends
+
+                                if (matchCount == this.buffer.length) {
+                                    while (this.buffer.length > 0) {
+                                        this.buffer = this.backspace(this.buffer);
+                                    }
+                                    this.buffer = similarCommands[j];
+                                    this.putText(this.buffer);
+                                }
+                            }
+                        }
+                    }
+                }
+                else {
                     // This is a "normal" character, so ...
                     // ... draw it on the screen...
                     this.putText(chr);
@@ -81,6 +181,17 @@ module TSOS {
                                      _FontHeightMargin;
 
             // TODO: Handle scrolling. (iProject 1)
+            // Save current Y position and check if need scrolled
+            var positionY_line = this.currentYPosition;
+            if (this.currentYPosition > _Canvas.height) {
+                // Snapshot canvas and clear
+                var console_snapshot = _DrawingContext.getImageData(0, 0, _Canvas.width, positionY_line + 1);
+                this.clearScreen();
+                // Post snapshot 1 index above Y position
+                var positionY_difference = this.currentYPosition - _Canvas.height + 1;
+                _DrawingContext.putImageData(console_snapshot, 0, -positionY_difference);
+                this.currentYPosition -= positionY_difference;
+            }
         }
     }
  }

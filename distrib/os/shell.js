@@ -16,6 +16,7 @@ var TSOS;
             this.commandList = [];
             this.curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
             this.apologies = "[sorry]";
+            this.hostStatus = "";
         }
         Shell.prototype.init = function () {
             var sc;
@@ -51,11 +52,17 @@ var TSOS;
             // whereami
             sc = new TSOS.ShellCommand(this.shellWhere, "whereami", "- Displays the users current location");
             this.commandList[this.commandList.length] = sc;
-            // TBD shell command
-            sc = new TSOS.ShellCommand(this.shellSomethingElse, "somethingelse", "- Displays something else");
+            // pie
+            sc = new TSOS.ShellCommand(this.shellPie, "pie", "<number> - Hungry for math?");
             this.commandList[this.commandList.length] = sc;
             // status <string>
             sc = new TSOS.ShellCommand(this.shellStatus, "status", "<string> - Sets the status in host display.");
+            this.commandList[this.commandList.length] = sc;
+            // load
+            sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Verifies values entered in the User Program Input");
+            this.commandList[this.commandList.length] = sc;
+            // BSOD
+            sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Tread lightly... you're playing with fire");
             this.commandList[this.commandList.length] = sc;
             // ps  - list the running processes and their IDs
             // kill <id> - kills the specified process id.
@@ -227,6 +234,26 @@ var TSOS;
                     case "prompt":
                         _StdOut.putText("Prompt uses an entered string and displays that value before every command thereafter");
                         break;
+                    case "date":
+                        _StdOut.putText("What time is it? Time to get a watch... or just use this command");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Someone's lost. Try out this command and then you'll know! Maybe...");
+                        break;
+                    case "pie":
+                        _StdOut.putText("Enter 9 digits and a decimal that looks like this: '3.14159265'...");
+                        _StdOut.advanceLine();
+                        _StdOut.putText("Help too specific? Eh, just have some pie, you'll feel better");
+                        break;
+                    case "status":
+                        _StdOut.putText("See that 'Status' up top? The one next to the 'Date' and 'Time'? Yeah you can change that");
+                        break;
+                    case "load":
+                        _StdOut.putText("This one validates what you enter into the 'User Program Input' to your right. Only hex values (A-F, 0-9) will be allowed.");
+                        break;
+                    case "bsod":
+                        _StdOut.putText("This tests the Blue Screen Of Death. Pretty cool to see, but kinda need to reset your system afterwards.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
@@ -253,7 +280,7 @@ var TSOS;
                         _StdOut.putText("Trace OFF");
                         break;
                     default:
-                        _StdOut.putText("Invalid arguement.  Usage: trace <on | off>.");
+                        _StdOut.putText("Invalid argument.  Usage: trace <on | off>.");
                 }
             }
             else {
@@ -284,16 +311,66 @@ var TSOS;
         Shell.prototype.shellWhere = function (args) {
             _StdOut.putText("Madison Square Garden");
         };
-        Shell.prototype.shellSomethingElse = function (args) {
-            _StdOut.putText("Something else interesting and creative...");
+        Shell.prototype.shellPie = function (args) {
+            if (args.length > 0) {
+                var attemptPi = args[0];
+                if (attemptPi == "3.14159265") {
+                    _StdOut.putText("CONGRATS!! You knew the beginning of Pi. You're reward...");
+                    _StdOut.advanceLine();
+                    _StdOut.putText("MORE PI!!... 3.1415926535897932384626433832795028841971693993751058209749445923078164062862089986280348253421170679...");
+                }
+                else {
+                    _StdOut.putText("Boooo you got Pi WRONG. No Pie for you :(");
+                }
+            }
+            else {
+                _StdOut.putText("Please supply pi after pie");
+            }
         };
         Shell.prototype.shellStatus = function (args) {
             if (args.length > 0) {
-                (document.getElementById("status")).innerHTML = args[0];
+                _OsShell.hostStatus = "";
+                var i = 0;
+                while (args[i] != null) {
+                    _OsShell.hostStatus = _OsShell.hostStatus + args[i] + " ";
+                    i++;
+                }
+                document.getElementById("status").innerHTML = _OsShell.hostStatus;
             }
             else {
-                _StdOut.putText("Usage: prompt <string>  Please supply a string.");
+                _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
+        };
+        Shell.prototype.shellLoad = function (args) {
+            // Retrieve user input and remove whitespace
+            var user_input = document.getElementById("taProgramInput")["value"];
+            user_input = user_input.replace(/ +/g, "").toUpperCase();
+            // validate hex
+            var isHexTrue = false;
+            for (var i = 0; i < user_input.length; i++) {
+                if (user_input[i] != "A" && user_input[i] != "B" && user_input[i] != "C" && user_input[i] != "D"
+                    && user_input[i] != "E" && user_input[i] != "F" && user_input[i] != "0" && user_input[i] != "1"
+                    && user_input[i] != "2" && user_input[i] != "3" && user_input[i] != "4" && user_input[i] != "5"
+                    && user_input[i] != "6" && user_input[i] != "7" && user_input[i] != "8" && user_input[i] != "9") {
+                    isHexTrue = false;
+                    break;
+                }
+                else {
+                    isHexTrue = true;
+                }
+            }
+            if (isHexTrue) {
+                _StdOut.putText("Appropriate values were entered into the User Program Input");
+            }
+            else {
+                _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
+            }
+            console.log("User Program Input: " + user_input);
+        };
+        Shell.prototype.shellBSOD = function (args) {
+            var msg = "Uh oh... well, even though it was a test, you done f%$ked up";
+            _Kernel.krnTrapError(msg);
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
         };
         return Shell;
     }());
