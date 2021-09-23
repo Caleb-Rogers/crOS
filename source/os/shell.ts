@@ -292,6 +292,24 @@ module TSOS {
                     case "prompt":
                         _StdOut.putText("Prompt uses an entered string and displays that value before every command thereafter");
                         break;
+                    case "date":
+                        _StdOut.putText("What time is it? Time to get a watch... or just use this command");
+                        break;
+                    case "whereami":
+                        _StdOut.putText("Someone's lost. Try out this command and then you'll know! Maybe...");
+                        break;
+                    case "pie":
+                        _StdOut.putText("Enter 9 digits and a decimal that looks like this: '3.14159265'... help too specific? Eh, just have some pie.");
+                        break;
+                    case "status":
+                        _StdOut.putText("See that 'Status' up top? The one next to the 'Date' and 'Time'? Yeah you can change that");
+                        break;
+                    case "load":
+                        _StdOut.putText("This one validates what you enter into the 'User Program Input' to your right. Only hex values (A-F, 0-9) will be allowed.");
+                        break;
+                    case "bsod":
+                        _StdOut.putText("This tests the Blue Screen Of Death. Pretty cool to see, but kinda need to reset your system afterwards.");
+                        break;
                     default:
                         _StdOut.putText("No manual entry for " + args[0] + ".");
                 }
