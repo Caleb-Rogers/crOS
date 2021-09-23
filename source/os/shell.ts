@@ -15,6 +15,7 @@ module TSOS {
         public commandList = [];
         public curses = "[fuvg],[cvff],[shpx],[phag],[pbpxfhpxre],[zbgureshpxre],[gvgf]";
         public apologies = "[sorry]";
+        public hostStatus = "";
 
         constructor() {
         }
@@ -365,7 +366,13 @@ module TSOS {
 
         public shellStatus(args: string[]) {
             if (args.length > 0) {
-                (document.getElementById("status")).innerHTML=args[0];
+                _OsShell.hostStatus = "";
+                var i = 0;
+                while (args[i] != null) {
+                    _OsShell.hostStatus = _OsShell.hostStatus + args[i] + " ";
+                    i++;
+                }
+                document.getElementById("status").innerHTML=_OsShell.hostStatus;
             } else {
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
             }

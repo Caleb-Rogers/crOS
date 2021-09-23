@@ -128,7 +128,6 @@ module TSOS {
             document.getElementById("time").innerHTML=runningTime;
         }
 
-
         public static BSOD(msg): void {
             document.getElementById("display").style.background = "lightblue";
             document.getElementById("backdrop").style.background = "blue";
