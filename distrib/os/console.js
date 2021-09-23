@@ -6,8 +6,15 @@
      ------------ */
 var TSOS;
 (function (TSOS) {
-    class Console {
-        constructor(currentFont = _DefaultFontFamily, currentFontSize = _DefaultFontSize, currentXPosition = 0, currentYPosition = _DefaultFontSize, buffer = "", oldCommandsArr = [""], oldCommandsIndex = 0, similarCommands = []) {
+    var Console = /** @class */ (function () {
+        function Console(currentFont, currentFontSize, currentXPosition, currentYPosition, buffer, oldCommandsArr, oldCommandsIndex) {
+            if (currentFont === void 0) { currentFont = _DefaultFontFamily; }
+            if (currentFontSize === void 0) { currentFontSize = _DefaultFontSize; }
+            if (currentXPosition === void 0) { currentXPosition = 0; }
+            if (currentYPosition === void 0) { currentYPosition = _DefaultFontSize; }
+            if (buffer === void 0) { buffer = ""; }
+            if (oldCommandsArr === void 0) { oldCommandsArr = [""]; }
+            if (oldCommandsIndex === void 0) { oldCommandsIndex = 0; }
             this.currentFont = currentFont;
             this.currentFontSize = currentFontSize;
             this.currentXPosition = currentXPosition;
@@ -15,20 +22,27 @@ var TSOS;
             this.buffer = buffer;
             this.oldCommandsArr = oldCommandsArr;
             this.oldCommandsIndex = oldCommandsIndex;
-            this.similarCommands = similarCommands;
         }
-        init() {
+        Console.prototype.init = function () {
             this.clearScreen();
             this.resetXY();
-        }
-        clearScreen() {
+        };
+        Console.prototype.clearScreen = function () {
             _DrawingContext.clearRect(0, 0, _Canvas.width, _Canvas.height);
-        }
-        resetXY() {
+        };
+        Console.prototype.resetXY = function () {
             this.currentXPosition = 0;
             this.currentYPosition = this.currentFontSize;
-        }
-        handleInput() {
+        };
+        Console.prototype.backspace = function (buffer) {
+            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
+            var y_distance = this.currentYPosition - _DefaultFontSize;
+            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
+            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, buffer.charAt(buffer.length - 1));
+            buffer = buffer.slice(0, -1);
+            return buffer;
+        };
+        Console.prototype.handleInput = function () {
             while (_KernelInputQueue.getSize() > 0) {
                 // Get the next character from the kernel input queue.
                 var chr = _KernelInputQueue.dequeue();
@@ -45,13 +59,7 @@ var TSOS;
                 }
                 else if (chr === String.fromCharCode(8)) { // handle backspace
                     if (this.buffer) {
-                        // Determine distance to delete
-                        var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                        var y_distance = this.currentYPosition - _DefaultFontSize;
-                        // Delete character, update x-axis and update buffer
-                        _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
-                        this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                        this.buffer = this.buffer.slice(0, -1);
+                        this.buffer = this.backspace(this.buffer);
                     }
                 }
                 else if (chr === String.fromCharCode(38)) { // command history - up arrow
@@ -60,15 +68,11 @@ var TSOS;
                         if (this.oldCommandsIndex == 0) {
                             this.oldCommandsIndex = this.oldCommandsArr.length;
                         }
-                        // Clear line 
                         while (this.buffer.length > 0) {
-                            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                            var y_distance = this.currentYPosition - _DefaultFontSize;
-                            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
-                            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                            this.buffer = this.buffer.slice(0, -1);
+                            this.buffer = this.backspace(this.buffer);
                         }
                         this.oldCommandsIndex--;
+                        console.log(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
                     }
@@ -78,52 +82,57 @@ var TSOS;
                     if (this.oldCommandsArr.length > 0) {
                         if (this.oldCommandsIndex == this.oldCommandsArr.length) {
                             this.oldCommandsIndex = 0;
+                            this.oldCommandsArr[this.oldCommandsIndex] = "";
                         }
-                        // Clear line                                         
                         while (this.buffer.length > 0) {
-                            var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                            var y_distance = this.currentYPosition - _DefaultFontSize;
-                            _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
-                            this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                            this.buffer = this.buffer.slice(0, -1);
+                            this.buffer = this.backspace(this.buffer);
                         }
                         this.oldCommandsIndex++;
+                        console.log(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.putText(this.oldCommandsArr[this.oldCommandsIndex]);
                         this.buffer = this.oldCommandsArr[this.oldCommandsIndex];
                     }
                 }
                 else if (chr === String.fromCharCode(9)) { // handle tab
-                    // validate for something typed
+                    //var existingSimilarCommands = [_OsShell.commandList];
+                    var similarCommands = [];
+                    var y = 0;
                     if (this.buffer.length > 0) {
-                        // nested loop to find all possible commands to current buffer
-                        for (var j = 0; j < _OsShell.commandList.length; j++) {
-                            var similarCMDcounter = 0;
-                            for (var i = 0; i < this.buffer.length; i++) {
-                                if (_OsShell.commandList[i].command[j] == this.buffer[j]) {
-                                    similarCMDcounter++;
-                                }
-                                if (similarCMDcounter == this.buffer.length) {
-                                    this.similarCommands[i] = _OsShell.commandList[i].command;
-                                }
-                                console.log(_OsShell.commandList[j].command[i]);
-                                console.log(this.buffer[j]);
-                                // if no similar commands
-                                if (this.similarCommands.length == 0) {
-                                    break;
-                                }
-                                else if (this.similarCommands.length == 1) {
-                                    // Clear line                                         
-                                    while (this.buffer.length > 0) {
-                                        var x_distance = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                                        var y_distance = this.currentYPosition - _DefaultFontSize;
-                                        _DrawingContext.clearRect(x_distance, y_distance, this.currentXPosition, this.currentYPosition + _DrawingContext.fontDescent(this.currentFont, this.currentFontSize));
-                                        this.currentXPosition = this.currentXPosition - _DrawingContext.measureText(this.currentFont, this.currentFontSize, this.buffer.charAt(this.buffer.length - 1));
-                                        this.buffer = this.buffer.slice(0, -1);
+                        // Iterate through cmd list and save every matching cmd
+                        for (var x = 0; x < _OsShell.commandList.length; x++) {
+                            if (_OsShell.commandList[x].command[0] == this.buffer[0]) {
+                                similarCommands[y] = _OsShell.commandList[x].command;
+                                y++;
+                            }
+                        }
+                        if (similarCommands.length == 0) {
+                            break;
+                        }
+                        else if (similarCommands.length == 1) {
+                            while (this.buffer.length > 0) {
+                                this.buffer = this.backspace(this.buffer);
+                            }
+                            this.buffer = similarCommands[0];
+                            this.putText(this.buffer);
+                            break;
+                        }
+                        else if (similarCommands.length > 1) {
+                            // Iterate through buffer
+                            for (var j = 0; j < similarCommands.length; j++) {
+                                var matchCount = 0;
+                                for (var k = 0; k < this.buffer.length; k++) {
+                                    console.log("cmd list: " + similarCommands[j][k]);
+                                    console.log("buffer: " + this.buffer[k]);
+                                    if (similarCommands[j][k] == this.buffer[k]) {
+                                        matchCount++;
                                     }
-                                    this.buffer = this.similarCommands[0].command;
-                                    console.log("Buffer: " + this.buffer);
+                                } // inner loop ends
+                                if (matchCount == this.buffer.length) {
+                                    while (this.buffer.length > 0) {
+                                        this.buffer = this.backspace(this.buffer);
+                                    }
+                                    this.buffer = similarCommands[j];
                                     this.putText(this.buffer);
-                                    break;
                                 }
                             }
                         }
@@ -138,8 +147,8 @@ var TSOS;
                 }
                 // TODO: Add a case for Ctrl-C that would allow the user to break the current program.
             }
-        }
-        putText(text) {
+        };
+        Console.prototype.putText = function (text) {
             /*  My first inclination here was to write two functions: putChar() and putString().
                 Then I remembered that JavaScript is (sadly) untyped and it won't differentiate
                 between the two. (Although TypeScript would. But we're compiling to JavaScipt anyway.)
@@ -154,8 +163,8 @@ var TSOS;
                 var offset = _DrawingContext.measureText(this.currentFont, this.currentFontSize, text);
                 this.currentXPosition = this.currentXPosition + offset;
             }
-        }
-        advanceLine() {
+        };
+        Console.prototype.advanceLine = function () {
             this.currentXPosition = 0;
             /*
              * Font size measures from the baseline to the highest point in the font.
@@ -177,8 +186,8 @@ var TSOS;
                 _DrawingContext.putImageData(console_snapshot, 0, -positionY_difference);
                 this.currentYPosition -= positionY_difference;
             }
-        }
-    }
+        };
+        return Console;
+    }());
     TSOS.Console = Console;
 })(TSOS || (TSOS = {}));
-//# sourceMappingURL=console.js.map
