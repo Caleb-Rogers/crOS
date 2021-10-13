@@ -3,28 +3,36 @@ var TSOS;
     class PCB {
         constructor(PID = 0, // ProcessID
         PC = 0, // ProcessCounter
+        IR = "", // Instruction Register    
         Acc = 0, // Accumulator
         Xreg = 0, // X Register
         Yreg = 0, // Y Register 
         Zflag = 0, // Z Flag
-        isExecuting = false // PCB state
-        ) {
+        Priority = 0, // Priority
+        State = false, // isRunning? State
+        Location = "") {
             this.PID = PID;
             this.PC = PC;
+            this.IR = IR;
             this.Acc = Acc;
             this.Xreg = Xreg;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
-            this.isExecuting = isExecuting;
+            this.Priority = Priority;
+            this.State = State;
+            this.Location = Location;
         }
         init() {
             this.PID = 0;
             this.PC = 0;
+            this.IR = "";
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
             this.Zflag = 0;
-            this.isExecuting = false;
+            this.Priority = 0;
+            this.State = true;
+            this.Location = "";
         }
     }
     TSOS.PCB = PCB;
