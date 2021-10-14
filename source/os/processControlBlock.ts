@@ -3,7 +3,7 @@ module TSOS {
     export class PCB {
 
         constructor(public PID: number = 0,                 // ProcessID
-                    public PC: number = 0,                  // ProcessCounter
+                    public PC: number = 0,                  // ProgramCounter
                     public IR: string = "",                 // Instruction Register    
                     public Acc: number = 0,                 // Accumulator
                     public Xreg: number = 0,                // X Register

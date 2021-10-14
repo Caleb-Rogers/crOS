@@ -2,7 +2,7 @@ var TSOS;
 (function (TSOS) {
     class PCB {
         constructor(PID = 0, // ProcessID
-        PC = 0, // ProcessCounter
+        PC = 0, // ProgramCounter
         IR = "", // Instruction Register    
         Acc = 0, // Accumulator
         Xreg = 0, // X Register

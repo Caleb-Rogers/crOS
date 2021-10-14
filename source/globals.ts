@@ -33,6 +33,7 @@ var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
+var _PCBList: TSOS.PCB[] = [];
 
 
 

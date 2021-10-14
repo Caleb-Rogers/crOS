@@ -133,7 +133,9 @@ var TSOS;
             // 1. Remove leading and trailing spaces.
             buffer = TSOS.Utils.trim(buffer);
             // 2. Lower-case it.
-            buffer = buffer.toLowerCase();
+            if (buffer.slice(0, 6) != "status") { // Allows status command to remain uppercase
+                buffer = buffer.toLowerCase();
+            }
             // 3. Separate on spaces so we can determine the command and command-line args, if any.
             var tempList = buffer.split(" ");
             // 4. Take the first (zeroth) element and use that as the command.
@@ -344,14 +346,14 @@ var TSOS;
         shellLoad(args) {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
-            user_input = user_input.replace(/ +/g, "").toUpperCase();
-            // validate hex
+            var condensed_input = user_input.replace(/ +/g, "").toUpperCase();
+            // Validate that string only contains hex characters
             var isHexTrue = false;
-            for (var i = 0; i < user_input.length; i++) {
-                if (user_input[i] != "A" && user_input[i] != "B" && user_input[i] != "C" && user_input[i] != "D"
-                    && user_input[i] != "E" && user_input[i] != "F" && user_input[i] != "0" && user_input[i] != "1"
-                    && user_input[i] != "2" && user_input[i] != "3" && user_input[i] != "4" && user_input[i] != "5"
-                    && user_input[i] != "6" && user_input[i] != "7" && user_input[i] != "8" && user_input[i] != "9") {
+            for (var i = 0; i < condensed_input.length; i++) {
+                if (condensed_input[i] != "A" && condensed_input[i] != "B" && condensed_input[i] != "C" && condensed_input[i] != "D"
+                    && condensed_input[i] != "E" && condensed_input[i] != "F" && condensed_input[i] != "0" && condensed_input[i] != "1"
+                    && condensed_input[i] != "2" && condensed_input[i] != "3" && condensed_input[i] != "4" && condensed_input[i] != "5"
+                    && condensed_input[i] != "6" && condensed_input[i] != "7" && condensed_input[i] != "8" && condensed_input[i] != "9") {
                     isHexTrue = false;
                     break;
                 }
@@ -361,6 +363,10 @@ var TSOS;
             }
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
+                // Populate Memory with User Program Input
+                _MemoryManager.loadMemory(condensed_input);
+                // Initialize a PCB for instruction handling
+                var PCB = new TSOS.PCB();
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
