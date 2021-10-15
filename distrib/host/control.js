@@ -116,6 +116,8 @@ var TSOS;
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);
         }
+        static updateMemory() {
+        }
     }
     TSOS.Control = Control;
 })(TSOS || (TSOS = {}));

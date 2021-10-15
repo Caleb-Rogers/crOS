@@ -343,7 +343,12 @@ var TSOS;
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
         }
-        shellLoad(args) {
+        shellBSOD() {
+            let msg = "Uh oh... well, even though it was a test, you done f%$ked up";
+            _Kernel.krnTrapError(msg);
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
+        }
+        shellLoad() {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
             var condensed_input = user_input.replace(/ +/g, "").toUpperCase();
@@ -373,10 +378,16 @@ var TSOS;
             }
             console.log("User Program Input: " + user_input);
         }
-        shellBSOD(args) {
-            let msg = "Uh oh... well, even though it was a test, you done f%$ked up";
-            _Kernel.krnTrapError(msg);
-            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
+        shellRun(args) {
+            if (args.length == 1) {
+                var pid_input = Number(args[0]);
+                // get PCB
+                // add process to ready queue
+                // execute...
+            }
+            else {
+                _StdOut.putText("Please supply a ProcessID integer to run a specified program from memory");
+            }
         }
     }
     TSOS.Shell = Shell;

@@ -2,8 +2,10 @@ module TSOS {
 
     export class MemoryAccessor {
 
-        constructor() {
+        constructor() {}
 
+        public fetchMemory(index) {
+            return _Memory.tsosMemory[index];
         }
     }
 }

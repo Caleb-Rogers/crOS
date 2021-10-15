@@ -1,7 +1,9 @@
 var TSOS;
 (function (TSOS) {
     class MemoryAccessor {
-        constructor() {
+        constructor() { }
+        fetchMemory(index) {
+            return _Memory.tsosMemory[index];
         }
     }
     TSOS.MemoryAccessor = MemoryAccessor;

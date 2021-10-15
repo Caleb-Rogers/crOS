@@ -143,5 +143,9 @@ module TSOS {
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);
         }
+
+        public static updateMemory() {          
+
+        }
     }
 }
