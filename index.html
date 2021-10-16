@@ -15,6 +15,9 @@
    <script type="text/javascript" src="distrib/host/control.js"></script>
    <script type="text/javascript" src="distrib/host/devices.js"></script>
    <script type="text/javascript" src="distrib/host/cpu.js"></script>
+   <script type="text/javascript" src="distrib/host/memory.js"></script>
+   <script type="text/javascript" src="distrib/host/memoryAccessor.js"></script>
+
 
    <!-- Virtual OS Routines: Make sure Kernel code is last, since it needs those above it. -->
    <script type="text/javascript" src="distrib/os/interrupt.js"></script>
@@ -27,11 +30,13 @@
    <script type="text/javascript" src="distrib/os/shellCommand.js"></script>
    <script type="text/javascript" src="distrib/os/userCommand.js"></script>
    <script type="text/javascript" src="distrib/os/kernel.js"></script>
+   <script type="text/javascript" src="distrib/os/memoryManager.js"></script>
+   <script type="text/javascript" src="distrib/os/processControlBlock.js"></script>
 
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip0.js"></script>
+   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip2.js"></script>
    
 </head>
 
@@ -106,6 +111,80 @@
          ></textarea>
       </label>
    </div>
+</div>
+
+<div id="divMem" style="float: left">
+   <label>
+      Memory
+      <br>
+      <table id="tblMem">
+         <tbody>
+            <!-- TODO: Implement Memory -->
+         </tbody>
+      </table>
+   </label>
+</div>
+
+<div id="divCPU" style="float: left;">
+   <label>
+      CPU
+      <br>
+      <table id="tblCPU">
+         <tbody>
+            <tr>
+               <th>PC</th>
+               <th>IR</th>
+               <th>ACC</th>
+               <th>Xreg</th>
+               <th>Yreg</th>
+               <th>Zflag</th>
+            </tr>
+            <tr>
+               <td id="cpuPC"></td>
+               <td id="cpuIR"></td>
+               <td id="cpuACC"></td>
+               <td id="cpuX"></td>
+               <td id="cpuY"></td>
+               <td id="cpuZ"></td>
+            </tr>
+         </tbody>
+      </table>
+   </label>
+</div>
+
+<div id="divPCB" style="float:left;">
+   <label>
+      PCB
+      <br>
+      <table id="tblPCB">
+         <tbody>
+            <tr>
+               <th>PID</th>
+               <th>PC</th>
+               <th>IR</th>
+               <th>ACC</th>
+               <th>Xreg</th>
+               <th>Yreg</th>
+               <th>Zflag</th>
+               <th>Priority</th>
+               <th>State</th>
+               <th>Location</th>
+            </tr>
+            <tr>
+               <td id="pcbPID"></td>
+               <td id="pcbPC"></td>
+               <td id="pcbIR"></td>
+               <td id="pcbACC"></td>
+               <td id="pcbX"></td>
+               <td id="pcbY"></td>
+               <td id="pcbZ"></td>
+               <td id="pcbPRI"></td>
+               <td id="pcbSTA"></td>
+               <td id="pcbLOC"></td>
+            </tr>
+         </tbody>
+      </table>
+   </label>
 </div>
 
 <p class="footerText" style="clear:both;">

@@ -100,7 +100,13 @@ module TSOS {
             // load
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "- Verifies values entered in the User Program Input");
+                "<number> - Verifies values entered in the User Program Input");
+            this.commandList[this.commandList.length] = sc;
+
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "- Run a program from Memory");
             this.commandList[this.commandList.length] = sc;
 
             // BSOD
@@ -181,7 +187,9 @@ module TSOS {
             buffer = Utils.trim(buffer);
 
             // 2. Lower-case it.
-            buffer = buffer.toLowerCase();
+            if (buffer.slice(0, 6) != "status") { // Allows status command to remain uppercase
+                buffer = buffer.toLowerCase();
+            }
 
             // 3. Separate on spaces so we can determine the command and command-line args, if any.
             var tempList = buffer.split(" ");
@@ -309,6 +317,9 @@ module TSOS {
                     case "load":
                         _StdOut.putText("This one validates what you enter into the 'User Program Input' to your right. Only hex values (A-F, 0-9) will be allowed.");
                         break;
+                    case "run":
+                        _StdOut.putText("This will run the user program specified by the entered PID. Ensure a program was entered in valid hex and processed into Memory by the load command.");
+                        break;
                     case "bsod":
                         _StdOut.putText("This tests the Blue Screen Of Death. Pretty cool to see, but kinda need to reset your system afterwards.");
                         break;
@@ -399,26 +410,41 @@ module TSOS {
             }
         }
 
-        public shellLoad(args: string[]) {
+        public shellLoad() {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
-            user_input = user_input.replace(/ +/g, "").toUpperCase();
-            // validate hex
-            var isHexTrue:boolean = false;
-            for (var i=0; i<user_input.length; i++) {
-                if (user_input[i] != "A" && user_input[i] != "B" && user_input[i] != "C" && user_input[i] != "D" 
-                 && user_input[i] != "E" && user_input[i] != "F" && user_input[i] != "0" && user_input[i] != "1" 
-                 && user_input[i] != "2" && user_input[i] != "3" && user_input[i] != "4" && user_input[i] != "5" 
-                 && user_input[i] != "6" && user_input[i] != "7" && user_input[i] != "8" && user_input[i] != "9") {
-                    isHexTrue = false;
-                    break;
+            var condensed_input = user_input.replace(/ +/g, "").toUpperCase();
+            // Validate that string only contains hex characters
+            var isHexTrue:boolean = true;
+            for (var i=0; i<condensed_input.length; i++) {
+                if (condensed_input[i] == "A" || condensed_input[i] == "B" || condensed_input[i] == "C" || condensed_input[i] == "D" 
+                 || condensed_input[i] == "E" || condensed_input[i] == "F" || condensed_input[i] == "0" || condensed_input[i] == "1" 
+                 || condensed_input[i] == "2" || condensed_input[i] == "3" || condensed_input[i] == "4" || condensed_input[i] == "5" 
+                 || condensed_input[i] == "6" || condensed_input[i] == "7" || condensed_input[i] == "8" || condensed_input[i] == "9"
+                 && (condensed_input.length % 2 == 0) && (condensed_input.length != 0)) {
+                    isHexTrue = true;
                 }
                 else {
-                    isHexTrue = true;
+                    isHexTrue = false;
+                    break;
                 }
             }
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
+                // Initialize a PCB for instruction handling
+                var PCB = new TSOS.PCB();
+                PCB.PID++;
+                _PCBList[_PCBList.length] = PCB;
+                console.log("PCB List: " + _PCBList);
+                // Clear, then populate Memory with User Program Input
+                _MemoryManager.clsMemory();
+                var hex_memory = _MemoryManager.loadMemory(condensed_input);
+                // Declare next instruction for PCB
+                PCB.IR = hex_memory[0];
+
+                // update Memory & PCB GUI...
+
+                
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
@@ -426,7 +452,25 @@ module TSOS {
             console.log("User Program Input: " + user_input);
         }
 
-        public shellBSOD(args: string[]) {
+        public shellRun(args: string[]) {
+            if (args.length == 1) {
+                var pid_input = Number(args[0]);
+                    if (String(_PCBList[pid_input].PID) == args[0]) {
+                        var executingProcess = _PCBList[pid_input];
+                        _CPU.isExecuting = true;
+                        TSOS.Control.updateCPU();
+                        TSOS.Control.updatePCB(); 
+                    }
+                    else {
+                        _StdOut.putText("The entered PID needs to be an integer and match an available process previously loaded into Memory");
+                    }
+            }
+            else {
+                _StdOut.putText("Please supply a ProcessID integer to run a specified program from Memory");
+            }
+        }
+
+        public shellBSOD() {
             let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
             _Kernel.krnTrapError(msg);
             (document.getElementById("status")).innerHTML = "[BSOD ERROR]";

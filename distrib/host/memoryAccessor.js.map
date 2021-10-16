@@ -1,0 +1,1 @@
+{"version":3,"file":"memoryAccessor.js","sourceRoot":"","sources":["../../source/host/memoryAccessor.ts"],"names":[],"mappings":"AAAA,IAAO,IAAI,CAUV;AAVD,WAAO,IAAI;IAEP,MAAa,cAAc;QAEvB,gBAAe,CAAC;QAET,WAAW,CAAC,KAAK;YACpB,OAAO,OAAO,CAAC,UAAU,CAAC,KAAK,CAAC,CAAC;QACrC,CAAC;KACJ;IAPY,mBAAc,iBAO1B,CAAA;AACL,CAAC,EAVM,IAAI,KAAJ,IAAI,QAUV"}

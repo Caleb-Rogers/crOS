@@ -10,17 +10,24 @@
 //
 // Global CONSTANTS (TypeScript 1.5 introduced const. Very cool.)
 //
-var APP_NAME = "crOS"; // Seemed fitting
-var APP_VERSION = "2.001"; // Wow, 2 decades under my belt
-var CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
-var TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
+const APP_NAME = "crOS"; // Seemed fitting
+const APP_VERSION = "2.001"; // Wow, 2 decades under my belt
+const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
+const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
-var KEYBOARD_IRQ = 1;
+const KEYBOARD_IRQ = 1;
 //
 // Global Variables
 // TODO: Make a global object and use that instead of the "_" naming convention in the global namespace.
 //
+// Hardware (host)
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
+var _Memory;
+var _MemoryAccessor; //
+// Software (OS)
+var _MemoryManager = null;
+var _PCBList = [];
+var _CurrPCB = null;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
@@ -51,3 +58,4 @@ var _GLaDOS = null; // If the above is linked in, this is the instantiated insta
 var onDocumentLoad = function () {
     TSOS.Control.hostInit();
 };
+//# sourceMappingURL=globals.js.map

@@ -69,7 +69,7 @@ module TSOS {
             // TODO in the future: Optionally update a log database or some streaming service.
         }
 
-
+        
         //
         // Host Events
         //
@@ -87,6 +87,12 @@ module TSOS {
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new Cpu();  // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init();       //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            
+            // Create and initialize Memory, also part of hardware
+            _Memory = new Memory();
+            _Memory.init();
+            // and a way to access it
+            _MemoryAccessor = new MemoryAccessor();
 
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
@@ -136,6 +142,36 @@ module TSOS {
             _StdOut.putText("[BSOD ERROR]: " + msg);
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);
+        }
+
+        public static updateMemory(): void {          
+
+        }
+
+        public static updateCPU(): void {
+            for (var i=0; i<_PCBList.length; i++) {
+                document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
+                document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
+                document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
+                document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
+                document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
+                document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+            }
+        }
+
+        public static updatePCB(): void {
+            for (var i=0; i<_PCBList.length; i++) {
+                document.getElementById("pcbPID").innerHTML = String(_PCBList[i].PID);
+                document.getElementById("pcbPC").innerHTML = String(_PCBList[i].PC);
+                document.getElementById("pcbIR").innerHTML = _PCBList[i].IR;
+                document.getElementById("pcbACC").innerHTML = String(_PCBList[i].Acc);
+                document.getElementById("pcbX").innerHTML = String(_PCBList[i].Xreg);
+                document.getElementById("pcbY").innerHTML = String(_PCBList[i].Yreg);
+                document.getElementById("pcbZ").innerHTML = String(_PCBList[i].Zflag);
+                document.getElementById("pcbPRI").innerHTML = String(_PCBList[i].Priority);
+                document.getElementById("pcbSTA").innerHTML = _PCBList[i].State;
+                document.getElementById("pcbLOC").innerHTML = _PCBList[i].Location;
+            }
         }
     }
 }

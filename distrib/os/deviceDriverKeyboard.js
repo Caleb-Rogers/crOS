@@ -3,44 +3,26 @@
 
    The Kernel Keyboard Device Driver.
    ---------------------------------- */
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 var TSOS;
 (function (TSOS) {
     // Extends DeviceDriver
-    var DeviceDriverKeyboard = /** @class */ (function (_super) {
-        __extends(DeviceDriverKeyboard, _super);
-        function DeviceDriverKeyboard() {
+    class DeviceDriverKeyboard extends TSOS.DeviceDriver {
+        constructor() {
             // Override the base method pointers.
-            var _this = 
             // The code below cannot run because "this" can only be
             // accessed after calling super.
             // super(this.krnKbdDriverEntry, this.krnKbdDispatchKeyPress);
             // So instead...
-            _super.call(this) || this;
-            _this.driverEntry = _this.krnKbdDriverEntry;
-            _this.isr = _this.krnKbdDispatchKeyPress;
-            return _this;
+            super();
+            this.driverEntry = this.krnKbdDriverEntry;
+            this.isr = this.krnKbdDispatchKeyPress;
         }
-        DeviceDriverKeyboard.prototype.krnKbdDriverEntry = function () {
+        krnKbdDriverEntry() {
             // Initialization routine for this, the kernel-mode Keyboard Device Driver.
             this.status = "loaded";
             // More?
-        };
-        DeviceDriverKeyboard.prototype.krnKbdDispatchKeyPress = function (params) {
+        }
+        krnKbdDispatchKeyPress(params) {
             // Parse the params.  TODO: Check that the params are valid and osTrapError if not.
             var keyCode = params[0];
             var isShifted = params[1];
@@ -200,8 +182,8 @@ var TSOS;
                 }
                 _KernelInputQueue.enqueue(chr);
             }
-        };
-        return DeviceDriverKeyboard;
-    }(TSOS.DeviceDriver));
+        }
+    }
     TSOS.DeviceDriverKeyboard = DeviceDriverKeyboard;
 })(TSOS || (TSOS = {}));
+//# sourceMappingURL=deviceDriverKeyboard.js.map

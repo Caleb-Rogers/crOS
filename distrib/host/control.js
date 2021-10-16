@@ -19,10 +19,8 @@
 //
 var TSOS;
 (function (TSOS) {
-    var Control = /** @class */ (function () {
-        function Control() {
-        }
-        Control.hostInit = function () {
+    class Control {
+        static hostInit() {
             // This is called from index.html's onLoad event via the onDocumentLoad function pointer.
             // Get a global reference to the canvas.  TODO: Should we move this stuff into a Display Device Driver?
             _Canvas = document.getElementById('display');
@@ -44,9 +42,8 @@ var TSOS;
                 _GLaDOS = new Glados();
                 _GLaDOS.init();
             }
-        };
-        Control.hostLog = function (msg, source) {
-            if (source === void 0) { source = "?"; }
+        }
+        static hostLog(msg, source = "?") {
             // Note the OS CLOCK.
             var clock = _OSclock;
             // Note the REAL clock in milliseconds since January 1, 1970.
@@ -57,11 +54,11 @@ var TSOS;
             var taLog = document.getElementById("taHostLog");
             taLog.value = str + taLog.value;
             // TODO in the future: Optionally update a log database or some streaming service.
-        };
+        }
         //
         // Host Events
         //
-        Control.hostBtnStartOS_click = function (btn) {
+        static hostBtnStartOS_click(btn) {
             // Disable the (passed-in) start button...
             btn.disabled = true;
             // .. enable the Halt and Reset buttons ...
@@ -72,6 +69,11 @@ var TSOS;
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
             _CPU = new TSOS.Cpu(); // Note: We could simulate multi-core systems by instantiating more than one instance of the CPU here.
             _CPU.init(); //       There's more to do, like dealing with scheduling and such, but this would be a start. Pretty cool.
+            // Create and initialize Memory, also part of hardware
+            _Memory = new TSOS.Memory();
+            _Memory.init();
+            // and a way to access it
+            _MemoryAccessor = new TSOS.MemoryAccessor();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -84,8 +86,8 @@ var TSOS;
             document.getElementById("date").innerHTML = today;
             document.getElementById("time").innerHTML = runningTime;
             document.getElementById("status").innerHTML = currentStat;
-        };
-        Control.hostBtnHaltOS_click = function (btn) {
+        }
+        static hostBtnHaltOS_click(btn) {
             Control.hostLog("Emergency halt", "host");
             Control.hostLog("Attempting Kernel shutdown.", "host");
             // Call the OS shutdown routine.
@@ -93,19 +95,19 @@ var TSOS;
             // Stop the interval that's simulating our clock pulse.
             clearInterval(_hardwareClockID);
             // TODO: Is there anything else we need to do here?
-        };
-        Control.hostBtnReset_click = function (btn) {
+        }
+        static hostBtnReset_click(btn) {
             // The easiest and most thorough way to do this is to reload (not refresh) the document.
             location.reload(); // true in parameters?
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
-        };
-        Control.dynamicHostTime = function () {
+        }
+        static dynamicHostTime() {
             var runningTime = new Date().toLocaleTimeString();
             document.getElementById("time").innerHTML = runningTime;
-        };
-        Control.BSOD = function (msg) {
+        }
+        static BSOD(msg) {
             document.getElementById("display").style.background = "lightblue";
             document.getElementById("backdrop").style.background = "blue";
             _Console.clearScreen();
@@ -113,8 +115,34 @@ var TSOS;
             _StdOut.putText("[BSOD ERROR]: " + msg);
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);
-        };
-        return Control;
-    }());
+        }
+        static updateMemory() {
+        }
+        static updateCPU() {
+            for (var i = 0; i < _PCBList.length; i++) {
+                document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
+                document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
+                document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
+                document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
+                document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
+                document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+            }
+        }
+        static updatePCB() {
+            for (var i = 0; i < _PCBList.length; i++) {
+                document.getElementById("pcbPID").innerHTML = String(_PCBList[i].PID);
+                document.getElementById("pcbPC").innerHTML = String(_PCBList[i].PC);
+                document.getElementById("pcbIR").innerHTML = _PCBList[i].IR;
+                document.getElementById("pcbACC").innerHTML = String(_PCBList[i].Acc);
+                document.getElementById("pcbX").innerHTML = String(_PCBList[i].Xreg);
+                document.getElementById("pcbY").innerHTML = String(_PCBList[i].Yreg);
+                document.getElementById("pcbZ").innerHTML = String(_PCBList[i].Zflag);
+                document.getElementById("pcbPRI").innerHTML = String(_PCBList[i].Priority);
+                document.getElementById("pcbSTA").innerHTML = _PCBList[i].State;
+                document.getElementById("pcbLOC").innerHTML = _PCBList[i].Location;
+            }
+        }
+    }
     TSOS.Control = Control;
 })(TSOS || (TSOS = {}));
+//# sourceMappingURL=control.js.map
