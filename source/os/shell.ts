@@ -103,6 +103,12 @@ module TSOS {
                 "- Verifies values entered in the User Program Input");
             this.commandList[this.commandList.length] = sc;
 
+            // run
+            sc = new ShellCommand(this.shellRun,
+                "run",
+                "- Run a program from Memory");
+            this.commandList[this.commandList.length] = sc;
+
             // BSOD
             sc = new ShellCommand(this.shellBSOD,
                 "bsod",
@@ -401,12 +407,6 @@ module TSOS {
             }
         }
 
-        public shellBSOD() {
-            let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
-            _Kernel.krnTrapError(msg);
-            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
-        }
-
         public shellLoad() {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
@@ -425,7 +425,6 @@ module TSOS {
                     isHexTrue = true;
                 }
             }
-
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
                 // Populate Memory with User Program Input
@@ -451,6 +450,12 @@ module TSOS {
             else {
                 _StdOut.putText("Please supply a ProcessID integer to run a specified program from memory");
             }
+        }
+
+        public shellBSOD() {
+            let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
+            _Kernel.krnTrapError(msg);
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
         }
     }
 }

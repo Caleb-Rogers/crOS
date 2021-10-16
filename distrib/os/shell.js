@@ -61,6 +61,9 @@ var TSOS;
             // load
             sc = new TSOS.ShellCommand(this.shellLoad, "load", "- Verifies values entered in the User Program Input");
             this.commandList[this.commandList.length] = sc;
+            // run
+            sc = new TSOS.ShellCommand(this.shellRun, "run", "- Run a program from Memory");
+            this.commandList[this.commandList.length] = sc;
             // BSOD
             sc = new TSOS.ShellCommand(this.shellBSOD, "bsod", "- Tread lightly... you're playing with fire");
             this.commandList[this.commandList.length] = sc;
@@ -343,11 +346,6 @@ var TSOS;
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
         }
-        shellBSOD() {
-            let msg = "Uh oh... well, even though it was a test, you done f%$ked up";
-            _Kernel.krnTrapError(msg);
-            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
-        }
         shellLoad() {
             // Retrieve user input and remove whitespace
             var user_input = document.getElementById("taProgramInput")["value"];
@@ -388,6 +386,11 @@ var TSOS;
             else {
                 _StdOut.putText("Please supply a ProcessID integer to run a specified program from memory");
             }
+        }
+        shellBSOD() {
+            let msg = "Uh oh... well, even though it was a test, you done f%$ked up";
+            _Kernel.krnTrapError(msg);
+            (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
         }
     }
     TSOS.Shell = Shell;
