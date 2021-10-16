@@ -34,7 +34,7 @@ var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
 var _PCBList: TSOS.PCB[] = [];
-
+var _CurrPCB: TSOS.PCB = null;
 
 
 var _OSclock: number = 0;  // Page 23.

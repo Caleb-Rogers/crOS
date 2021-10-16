@@ -9,7 +9,7 @@ var TSOS;
         Yreg = 0, // Y Register 
         Zflag = 0, // Z Flag
         Priority = 0, // Priority
-        State = false, // isRunning? State
+        State = "", // isRunning? State
         Location = "") {
             this.PID = PID;
             this.PC = PC;
@@ -31,7 +31,7 @@ var TSOS;
             this.Yreg = 0;
             this.Zflag = 0;
             this.Priority = 0;
-            this.State = true;
+            this.State = "";
             this.Location = "";
         }
     }

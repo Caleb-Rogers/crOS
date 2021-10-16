@@ -119,8 +119,28 @@ var TSOS;
         static updateMemory() {
         }
         static updateCPU() {
+            for (var i = 0; i < _PCBList.length; i++) {
+                document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
+                document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
+                document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
+                document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
+                document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
+                document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+            }
         }
         static updatePCB() {
+            for (var i = 0; i < _PCBList.length; i++) {
+                document.getElementById("pcbPID").innerHTML = String(_PCBList[i].PID);
+                document.getElementById("pcbPC").innerHTML = String(_PCBList[i].PC);
+                document.getElementById("pcbIR").innerHTML = _PCBList[i].IR;
+                document.getElementById("pcbACC").innerHTML = String(_PCBList[i].Acc);
+                document.getElementById("pcbX").innerHTML = String(_PCBList[i].Xreg);
+                document.getElementById("pcbY").innerHTML = String(_PCBList[i].Yreg);
+                document.getElementById("pcbZ").innerHTML = String(_PCBList[i].Zflag);
+                document.getElementById("pcbPRI").innerHTML = String(_PCBList[i].Priority);
+                document.getElementById("pcbSTA").innerHTML = _PCBList[i].State;
+                document.getElementById("pcbLOC").innerHTML = _PCBList[i].Location;
+            }
         }
     }
     TSOS.Control = Control;

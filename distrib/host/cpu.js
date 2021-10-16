@@ -35,42 +35,70 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
+            // Update PCB state to Running
+            _CurrPCB.State = "Running";
+            // Run next op code
+            this.runOPcodes();
+            // Update current PCB
+            _CurrPCB.PC = this.PC;
+            _CurrPCB.IR = this.IR;
+            _CurrPCB.Acc = this.Acc;
+            _CurrPCB.Xreg = this.Xreg;
+            _CurrPCB.Yreg = this.Yreg;
+            _CurrPCB.Zflag = this.Zflag;
+            // Update GUI
+            TSOS.Control.updatePCB();
+            TSOS.Control.updateCPU();
+            // increment PC
+            this.PC++;
         }
         runOPcodes() {
             // retrieve op code in Memory
             var op_code = _MemoryAccessor.fetchMemory(this.PC);
             console.log("op code: " + op_code);
-            /*
-            switch(op_code) {
+            switch (op_code) {
                 case "A9": // LDA constant
-                    // Increment Program Counter
-                    this.PC ++;
-                    // Update Accumulator with a constant
-                    // ...
-                    // Update Instruction Register with OP Code
-                    this.IR = "A9";
-
+                    this.loadConstant();
                 case "AD": // LDA memory
-                    // Increment Program Counter
-                    this.PC ++;
-                    // Update Accumulator from Memory
-                    // ...
-                    // Update Instruction Register with OP Code
-                    this.IR = "AD";
-
+                    this.loadMemory();
                 case "8D": // STA
-                    // get Accumulator - location and value in array
-                    // ...
-                    // update Memory
-                    _Memory.tsosMemory[location] = String(this.Acc);
-                    this.PC ++;
-                    // Update Instruction Register with OP Code
-                    this.IR = "8D";
+                    this.storeACCtoMem();
             }
-            */
             console.log("Program Counter: " + this.PC);
             console.log("Accumulator: " + this.Acc);
             console.log("Instruction Register: " + this.IR);
+        }
+        /********** OP Code Operations **********/
+        loadConstant() {
+            // Increment Program Counter
+            this.PC++;
+            // Update Accumulator with a constant
+            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
+            // Update Instruction Register with OP Code
+            this.IR = "A9";
+        }
+        loadMemory() {
+            // Increment Program Counter
+            this.PC++;
+            // Update Accumulator from Memory
+            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
+            // Update Instruction Register with OP Code
+            this.IR = "AD";
+        }
+        storeACCtoMem() {
+            // get Location
+            // get ACC value
+            // insert to memory
+            // update GUI?
+            var mem_location = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
+            var hex_value = _CurrPCB.Acc.toString(16);
+            _Memory.tsosMemory[mem_location] = hex_value;
+            TSOS.Control.updateMemory;
+            // Increment Program Counter
+            this.PC++;
+            this.PC++;
+            // Update Instruction Register with OP Code
+            this.IR = "8D";
         }
     }
     TSOS.Cpu = Cpu;

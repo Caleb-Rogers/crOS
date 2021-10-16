@@ -10,7 +10,7 @@ module TSOS {
                     public Yreg: number = 0,                // Y Register 
                     public Zflag: number = 0,               // Z Flag
                     public Priority: number = 0,            // Priority
-                    public State: boolean = false,          // isRunning? State
+                    public State: string = "",          // isRunning? State
                     public Location: string = "",           // Process Location
                     ) {
         }
@@ -24,7 +24,7 @@ module TSOS {
             this.Yreg = 0;
             this.Zflag = 0;
             this.Priority = 0;
-            this.State = true;
+            this.State = "";
             this.Location = "";
         }
     }
