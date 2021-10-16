@@ -23,8 +23,10 @@ module TSOS {
                 _Memory.tsosMemory[i] = hex_memory[i];
             }
 
-            console.log("hex input : " + chars_input);
+            console.log("hex input : " + hex_memory);
             console.log("Memory: " + _Memory.tsosMemory);
+
+            return hex_memory;
 
         }
 

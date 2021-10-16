@@ -118,6 +118,10 @@ var TSOS;
         }
         static updateMemory() {
         }
+        static updateCPU() {
+        }
+        static updatePCB() {
+        }
     }
     TSOS.Control = Control;
 })(TSOS || (TSOS = {}));

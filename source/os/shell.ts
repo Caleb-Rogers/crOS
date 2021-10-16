@@ -100,7 +100,7 @@ module TSOS {
             // load
             sc = new ShellCommand(this.shellLoad,
                 "load",
-                "- Verifies values entered in the User Program Input");
+                "<number> - Verifies values entered in the User Program Input");
             this.commandList[this.commandList.length] = sc;
 
             // run
@@ -317,6 +317,9 @@ module TSOS {
                     case "load":
                         _StdOut.putText("This one validates what you enter into the 'User Program Input' to your right. Only hex values (A-F, 0-9) will be allowed.");
                         break;
+                    case "run":
+                        _StdOut.putText("This will run the user program specified by the entered PID. Ensure a program was entered in valid hex and processed into Memory by the load command.");
+                        break;
                     case "bsod":
                         _StdOut.putText("This tests the Blue Screen Of Death. Pretty cool to see, but kinda need to reset your system afterwards.");
                         break;
@@ -412,25 +415,36 @@ module TSOS {
             var user_input = document.getElementById("taProgramInput")["value"];
             var condensed_input = user_input.replace(/ +/g, "").toUpperCase();
             // Validate that string only contains hex characters
-            var isHexTrue:boolean = false;
+            var isHexTrue:boolean = true;
             for (var i=0; i<condensed_input.length; i++) {
-                if (condensed_input[i] != "A" && condensed_input[i] != "B" && condensed_input[i] != "C" && condensed_input[i] != "D" 
-                 && condensed_input[i] != "E" && condensed_input[i] != "F" && condensed_input[i] != "0" && condensed_input[i] != "1" 
-                 && condensed_input[i] != "2" && condensed_input[i] != "3" && condensed_input[i] != "4" && condensed_input[i] != "5" 
-                 && condensed_input[i] != "6" && condensed_input[i] != "7" && condensed_input[i] != "8" && condensed_input[i] != "9") {
-                    isHexTrue = false;
-                    break;
+                if (condensed_input[i] == "A" || condensed_input[i] == "B" || condensed_input[i] == "C" || condensed_input[i] == "D" 
+                 || condensed_input[i] == "E" || condensed_input[i] == "F" || condensed_input[i] == "0" || condensed_input[i] == "1" 
+                 || condensed_input[i] == "2" || condensed_input[i] == "3" || condensed_input[i] == "4" || condensed_input[i] == "5" 
+                 || condensed_input[i] == "6" || condensed_input[i] == "7" || condensed_input[i] == "8" || condensed_input[i] == "9"
+                 && (condensed_input.length % 2 == 0) && (condensed_input.length != 0)) {
+                    isHexTrue = true;
                 }
                 else {
-                    isHexTrue = true;
+                    isHexTrue = false;
+                    break;
                 }
             }
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
-                // Populate Memory with User Program Input
-                _MemoryManager.loadMemory(condensed_input);
                 // Initialize a PCB for instruction handling
                 var PCB = new TSOS.PCB();
+                PCB.PID++;
+                _PCBList[_PCBList.length] = PCB;
+                console.log("PCB List: " + _PCBList);
+                // Clear, then populate Memory with User Program Input
+                _MemoryManager.clsMemory();
+                var hex_memory = _MemoryManager.loadMemory(condensed_input);
+                // Declare next instruction for PCB
+                PCB.IR = hex_memory[0];
+
+                // update Memory & PCB GUI...
+
+                
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
@@ -441,14 +455,18 @@ module TSOS {
         public shellRun(args: string[]) {
             if (args.length == 1) {
                 var pid_input = Number(args[0]);
-
-                // get PCB
-                // add process to ready queue
-                // execute...
-
+                    if (String(_PCBList[pid_input].PID) == args[0]) {
+                        var executingProcess = _PCBList[pid_input];
+                        _CPU.isExecuting = true;
+                        TSOS.Control.updateCPU();
+                        TSOS.Control.updatePCB(); 
+                    }
+                    else {
+                        _StdOut.putText("The entered PID needs to be an integer and match an available process previously loaded into Memory");
+                    }
             }
             else {
-                _StdOut.putText("Please supply a ProcessID integer to run a specified program from memory");
+                _StdOut.putText("Please supply a ProcessID integer to run a specified program from Memory");
             }
         }
 

@@ -20,8 +20,9 @@ var TSOS;
             for (var i = 0; i < hex_memory.length; i++) {
                 _Memory.tsosMemory[i] = hex_memory[i];
             }
-            console.log("hex input : " + chars_input);
+            console.log("hex input : " + hex_memory);
             console.log("Memory: " + _Memory.tsosMemory);
+            return hex_memory;
         }
         clsMemory() {
             // to reset memory, just re-initialize to all "00"

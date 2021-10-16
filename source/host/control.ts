@@ -144,7 +144,15 @@ module TSOS {
             clearInterval(_hardwareClockID);
         }
 
-        public static updateMemory() {          
+        public static updateMemory(): void {          
+
+        }
+
+        public static updateCPU(): void {
+
+        }
+
+        public static updatePCB():void {
 
         }
     }
