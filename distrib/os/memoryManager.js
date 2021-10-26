@@ -20,13 +20,18 @@ var TSOS;
             for (var i = 0; i < hex_memory.length; i++) {
                 _Memory.tsosMemory[i] = hex_memory[i];
             }
-            console.log("hex input : " + hex_memory);
-            console.log("Memory: " + _Memory.tsosMemory);
+            // Update how much memory is being used
+            _Memory.mem_used = user_prog_input.length;
+            console.log("User Program Input, Hex formatted: " + hex_memory);
+            console.log("Current Memory: " + _Memory.tsosMemory);
+            console.log(_Memory.mem_used + " bytes of memory are now being used");
             return hex_memory;
         }
         clsMemory() {
             // to reset memory, just re-initialize to all "00"
             _Memory.init();
+        }
+        updateMemoryGUI() {
         }
     }
     TSOS.MemoryManager = MemoryManager;

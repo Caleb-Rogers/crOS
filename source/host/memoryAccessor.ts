@@ -7,5 +7,10 @@ module TSOS {
         public fetchMemory(index) {
             return _Memory.tsosMemory[index];
         }
+
+        public fetchAllMemory() {
+            return _Memory.tsosMemory;
+        }
+
     }
 }

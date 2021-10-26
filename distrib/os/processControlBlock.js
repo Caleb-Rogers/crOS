@@ -34,6 +34,36 @@ var TSOS;
             this.State = "";
             this.Location = "";
         }
+        createPCB() {
+        }
+        storePCB() {
+        }
+        getPCB() {
+        }
+        removePCB() {
+        }
+        clsAllPCB() {
+        }
+        updatePID() {
+        }
+        updatePC() {
+        }
+        updateIR() {
+        }
+        updateAcc() {
+        }
+        updateX() {
+        }
+        updateY() {
+        }
+        updateZ() {
+        }
+        updatePriority() {
+        }
+        updateState() {
+        }
+        updateLocation() {
+        }
     }
     TSOS.PCB = PCB;
 })(TSOS || (TSOS = {}));

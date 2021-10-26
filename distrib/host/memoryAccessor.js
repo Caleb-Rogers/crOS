@@ -5,6 +5,9 @@ var TSOS;
         fetchMemory(index) {
             return _Memory.tsosMemory[index];
         }
+        fetchAllMemory() {
+            return _Memory.tsosMemory;
+        }
     }
     TSOS.MemoryAccessor = MemoryAccessor;
 })(TSOS || (TSOS = {}));

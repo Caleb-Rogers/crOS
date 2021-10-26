@@ -179,5 +179,7 @@ module TSOS {
             Control.BSOD(msg);
             this.krnShutdown();
         }
+
+        public krnCreateProcess
     }
 }

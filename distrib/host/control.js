@@ -117,18 +117,25 @@ var TSOS;
             clearInterval(_hardwareClockID);
         }
         static updateMemory() {
-        }
-        static updateCPU() {
-            for (var i = 0; i < _PCBList.length; i++) {
-                document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
-                document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
-                document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
-                document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
-                document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
-                document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+            var memory_table = document.getElementById("tblMem");
+            var mem_tbl_body;
+            var mem_locations = ["0x00", "0x008", "0x018", "0x020", "0x028", "0x030", "0x038", "0x040", "0x048", "0x050", "0x058", "0x060", "0x068", "0x070", "0x078", "0x080", "0x088", "0x090", "0x098", "0x100", "0x0A0", "0x0A8", "0x0B0", "0x0B8", "0x0C0", "0x0C8", "0x0D0", "0x0D8", "0x0E0", "0x0E8", "0x0F0", "0x0F8", "0x100", "0x108", "0x120", "0x128", "0x130", "0x138", "0X140", "0x148", "0X150", "0x158", "0X160", "0x168", "0X170", "0x178", "0X180", "0x188", "0X190", "0x198"];
+            for (var i = 0; i < _Memory.tsosMemory.length; i++) {
+                mem_tbl_body += "<tr><td>0x" + mem_locations[i] + "</td><td>" + _MemoryAccessor.fetchMemory[i] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 1] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 2] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 3] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 4] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 5] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 6] + "</td><td>" + _MemoryAccessor.fetchMemory[i + 7] + "</td>";
+                memory_table.innerHTML = mem_tbl_body;
             }
+            console.log("[Memory Updated]");
         }
-        static updatePCB() {
+        static updateCPU_GUI() {
+            document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
+            document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
+            document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
+            document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
+            document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
+            document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+            console.log("[CPU Updated]");
+        }
+        static updatePCB_GUI() {
             for (var i = 0; i < _PCBList.length; i++) {
                 document.getElementById("pcbPID").innerHTML = String(_PCBList[i].PID);
                 document.getElementById("pcbPC").innerHTML = String(_PCBList[i].PC);
@@ -141,6 +148,7 @@ var TSOS;
                 document.getElementById("pcbSTA").innerHTML = _PCBList[i].State;
                 document.getElementById("pcbLOC").innerHTML = _PCBList[i].Location;
             }
+            console.log("[PCB Updated]");
         }
     }
     TSOS.Control = Control;

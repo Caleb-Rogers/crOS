@@ -370,31 +370,56 @@ var TSOS;
             }
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
-                // Initialize a PCB for instruction handling
+                /* Create and Populate New Process Control Block */
+                // create new PCB
                 var PCB = new TSOS.PCB();
+                // increment Process ID
                 PCB.PID++;
+                // assign Program Counter...
+                // assign Instruction Register
+                PCB.IR = _MemoryAccessor.fetchMemory(PCB.PC);
+                // assign Accumulator...
+                // assign X register...
+                // assign Y register...
+                // assign Z register...
+                // assign priority
+                PCB.Priority = 32; //??
+                // assign state
+                PCB.State = "Loading"; //??
+                // assign location
+                PCB.Location = "Memory"; //??
+                // Add New PCB to Process List
                 _PCBList[_PCBList.length] = PCB;
-                console.log("PCB List: " + _PCBList);
-                // Clear, then populate Memory with User Program Input
+                // clear Memory and load User Program 
                 _MemoryManager.clsMemory();
-                var hex_memory = _MemoryManager.loadMemory(condensed_input);
-                // Declare next instruction for PCB
-                PCB.IR = hex_memory[0];
-                // update Memory & PCB GUI...
+                _MemoryManager.loadMemory(condensed_input);
+                console.log("PCB " + String(PCB.PID) + " was added. There are " + String(_PCBList.length) + " stored processes.");
+                _StdOut.putText("Process ID Number: " + String(PCB.PID));
+                // update Memory & PCB GUI
+                TSOS.Control.updatePCB_GUI();
+                TSOS.Control.updateCPU_GUI();
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
             }
-            console.log("User Program Input: " + user_input);
         }
         shellRun(args) {
+            // validate for PID
             if (args.length == 1) {
                 var pid_input = Number(args[0]);
+                // validate available PID
                 if (String(_PCBList[pid_input].PID) == args[0]) {
-                    var executingProcess = _PCBList[pid_input];
+                    // update Program Counter
+                    _CPU.PC = pid_input;
+                    // run OP codes in memory
+                    for (let i = 0; i < _Memory.mem_used; i++) {
+                        _CPU.cycle();
+                    }
+                    // update isExecuting
                     _CPU.isExecuting = true;
-                    TSOS.Control.updateCPU();
-                    TSOS.Control.updatePCB();
+                    // Update Memory & PCB GUIs
+                    TSOS.Control.updateCPU_GUI();
+                    TSOS.Control.updatePCB_GUI();
                 }
                 else {
                     _StdOut.putText("The entered PID needs to be an integer and match an available process previously loaded into Memory");
@@ -403,6 +428,8 @@ var TSOS;
             else {
                 _StdOut.putText("Please supply a ProcessID integer to run a specified program from Memory");
             }
+        }
+        shellRunAll() {
         }
         shellBSOD() {
             let msg = "Uh oh... well, even though it was a test, you done f%$ked up";

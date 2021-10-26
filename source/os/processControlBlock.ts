@@ -27,5 +27,65 @@ module TSOS {
             this.State = "";
             this.Location = "";
         }
+
+        public createPCB(): void {
+
+        }
+
+        public storePCB(): void {
+
+        }
+
+        public getPCB(): void {
+
+        }
+
+        public removePCB() : void {
+
+        }
+
+        public clsAllPCB(): void {
+
+        }
+
+        public updatePID(): void {
+
+        }
+
+        public updatePC (): void {
+
+        }
+
+        public updateIR (): void {
+
+        }
+
+        public updateAcc (): void {
+
+        }
+
+        public updateX (): void {
+
+        }
+
+        public updateY (): void {
+
+        }
+
+        public updateZ (): void {
+
+        }
+
+        public updatePriority (): void {
+
+        }
+
+        public updateState (): void {
+
+        }
+
+        public updateLocation (): void {
+
+        }
     }
 }

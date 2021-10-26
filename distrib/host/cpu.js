@@ -38,67 +38,79 @@ var TSOS;
             // Update PCB state to Running
             _CurrPCB.State = "Running";
             // Run next op code
-            this.runOPcodes();
-            // Update current PCB
-            _CurrPCB.PC = this.PC;
-            _CurrPCB.IR = this.IR;
-            _CurrPCB.Acc = this.Acc;
-            _CurrPCB.Xreg = this.Xreg;
-            _CurrPCB.Yreg = this.Yreg;
-            _CurrPCB.Zflag = this.Zflag;
+            this.runOPcode();
             // Update GUI
-            TSOS.Control.updatePCB();
-            TSOS.Control.updateCPU();
-            // increment PC
+            TSOS.Control.updatePCB_GUI();
+            TSOS.Control.updateCPU_GUI();
+            // update Program Counter for CPU
             this.PC++;
+            // update Instruction for CPU
+            this.IR = _MemoryAccessor.fetchMemory(this.PC);
         }
-        runOPcodes() {
-            // retrieve op code in Memory
+        runOPcode() {
+            // retrieve op code from memory
             var op_code = _MemoryAccessor.fetchMemory(this.PC);
-            console.log("op code: " + op_code);
+            console.log("OP Code returned from Memory: " + op_code);
+            // determine which assembly instruction
             switch (op_code) {
-                case "A9": // LDA constant
-                    this.loadConstant();
-                case "AD": // LDA memory
-                    this.loadMemory();
-                case "8D": // STA
-                    this.storeACCtoMem();
+                case "A9": this.LDAC();
+                case "AD": this.LDAM();
+                case "8D": this.STA();
+                case "6D": this.ADC();
+                case "A2": this.LDXC();
+                case "AE": this.LDXM();
+                case "A0": this.LDYC();
+                case "AC": this.LDYM();
+                case "EA": this.NOP();
+                case "00": this.BRK();
+                case "EC": this.CPX();
+                case "D0": this.BNE();
+                case "EE": this.INC();
+                case "FF": this.SYS();
             }
-            console.log("Program Counter: " + this.PC);
-            console.log("Accumulator: " + this.Acc);
-            console.log("Instruction Register: " + this.IR);
         }
-        /********** OP Code Operations **********/
-        loadConstant() {
-            // Increment Program Counter
-            this.PC++;
-            // Update Accumulator with a constant
-            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
-            // Update Instruction Register with OP Code
-            this.IR = "A9";
+        /* ============ 6502 Machine Instructions ============ */
+        // A9 - LDA - Load accumulator with constant
+        LDAC() {
         }
-        loadMemory() {
-            // Increment Program Counter
-            this.PC++;
-            // Update Accumulator from Memory
-            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
-            // Update Instruction Register with OP Code
-            this.IR = "AD";
+        // AD - LDA  - Load accumulator from memory
+        LDAM() {
         }
-        storeACCtoMem() {
-            // get Location
-            // get ACC value
-            // insert to memory
-            // update GUI?
-            var mem_location = parseInt(_MemoryAccessor.fetchMemory(this.PC), 16);
-            var hex_value = _CurrPCB.Acc.toString(16);
-            _Memory.tsosMemory[mem_location] = hex_value;
-            TSOS.Control.updateMemory;
-            // Increment Program Counter
-            this.PC++;
-            this.PC++;
-            // Update Instruction Register with OP Code
-            this.IR = "8D";
+        // 8D - STA  - Store accumulator in memory
+        STA() {
+        }
+        // 6D - ADC - Add with Carry
+        ADC() {
+        }
+        // A2 - LDX - Load X register with constant
+        LDXC() {
+        }
+        // AE - LDX - Load X register from memory
+        LDXM() {
+        }
+        // A0 - LDY - Load Y register with constant 
+        LDYC() {
+        }
+        // AC - LDY - Load Y register from memory
+        LDYM() {
+        }
+        // EA - NOP - No Operation
+        NOP() {
+        }
+        // 00 - BRK - Break
+        BRK() {
+        }
+        // EC - CPX - Compare a byte in memory to X reg, sets z flag if equal
+        CPX() {
+        }
+        // D0 - BNE - Branch n bytes if Z flag = 0
+        BNE() {
+        }
+        // EE - INC - Increment value of a byte
+        INC() {
+        }
+        // FF - SYS - System Call (#$01 in X = print Y, #$02 in X = print 00-terminated string at addr in Y)
+        SYS() {
         }
     }
     TSOS.Cpu = Cpu;

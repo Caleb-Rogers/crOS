@@ -1,10 +1,12 @@
 var TSOS;
 (function (TSOS) {
     class Memory {
-        constructor() {
+        constructor(mem_used = 0) {
+            this.mem_used = mem_used;
             this.tsosMemory = new Array(256);
         }
         init() {
+            this.mem_used = 0;
             for (var i = 0; i < this.tsosMemory.length; i++) {
                 this.tsosMemory[i] = "00";
             }
