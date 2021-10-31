@@ -370,59 +370,59 @@ var TSOS;
             }
             if (isHexTrue) {
                 _StdOut.putText("Appropriate values were entered into the User Program Input");
+                // reset CPU
+                _CPU.init();
                 /* Create and Populate New Process Control Block */
                 // create new PCB
                 var PCB = new TSOS.PCB();
-                // increment Process ID
-                PCB.PID++;
-                // assign Program Counter...
-                // assign Instruction Register
-                PCB.IR = _MemoryAccessor.fetchMemory(PCB.PC);
-                // assign Accumulator...
-                // assign X register...
-                // assign Y register...
-                // assign Z register...
-                // assign priority
-                PCB.Priority = 32; //??
-                // assign state
-                PCB.State = "Loading"; //??
-                // assign location
-                PCB.Location = "Memory"; //??
-                // Add New PCB to Process List
-                _PCBList[_PCBList.length] = PCB;
-                // clear Memory and load User Program 
+                // assign & increment Process ID
+                PCB.PID = _PCB_PID;
+                _PCB_PID++;
+                // assign PCB state & memory
+                PCB.State = "Resident";
+                PCB.Location = "Memory";
+                // add New PCB to Process List
+                _PCBList.push(PCB);
+                /* Load user program into Memory and update GUI */
+                // load memory
                 _MemoryManager.clsMemory();
                 _MemoryManager.loadMemory(condensed_input);
-                console.log("PCB " + String(PCB.PID) + " was added. There are " + String(_PCBList.length) + " stored processes.");
+                // update GUI
+                TSOS.Control.updateGUI_Memory_();
+                TSOS.Control.updateGUI_PCB_();
+                // Output
+                console.log("PCB (" + String(PCB.PID) + ") was added. There are currently" + String(_PCBList.length) + " stored processes.");
                 _StdOut.putText("Process ID Number: " + String(PCB.PID));
-                // update Memory & PCB GUI
-                TSOS.Control.updatePCB_GUI();
-                TSOS.Control.updateCPU_GUI();
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
             }
         }
         shellRun(args) {
-            // validate for PID
-            if (args.length == 1) {
+            // validate for appropriate user input
+            if (args.length > 0) {
+                var valid_pid = false;
                 var pid_input = Number(args[0]);
-                // validate available PID
-                if (String(_PCBList[pid_input].PID) == args[0]) {
-                    // update Program Counter
-                    _CPU.PC = pid_input;
-                    // run OP codes in memory
-                    for (let i = 0; i < _Memory.mem_used; i++) {
-                        _CPU.cycle();
+                // loop through list of processes to find matching PID
+                for (let i = 0; i < _PCBList.length; i++) {
+                    if (_PCBList[i].PID == pid_input) {
+                        valid_pid = true;
+                        _current_PCB_PID = _PCBList[i].PID;
+                        var pcb_process = _PCBList[i];
+                        _PCBList[i].State = "Running";
+                        break;
                     }
+                }
+                // validate the found process's state
+                if (valid_pid && pcb_process.State != "Terminated" && pcb_process.State != "Complete") {
                     // update isExecuting
                     _CPU.isExecuting = true;
-                    // Update Memory & PCB GUIs
-                    TSOS.Control.updateCPU_GUI();
-                    TSOS.Control.updatePCB_GUI();
+                    // Update CPU & PCB GUIs
+                    TSOS.Control.updateGUI_CPU_();
+                    TSOS.Control.updateGUI_PCB_();
                 }
                 else {
-                    _StdOut.putText("The entered PID needs to be an integer and match an available process previously loaded into Memory");
+                    _StdOut.putText("Supplied <PID> was not valid. Please Load a new process and run the process with the accompanying <PID>.");
                 }
             }
             else {

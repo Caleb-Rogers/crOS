@@ -37,6 +37,8 @@ module TSOS {
 
             // Initialize MemoryManager
             _MemoryManager = new MemoryManager();
+            // Initialize Memory GUI
+            Control.updateGUI_Memory_();
             
             //
             // ... more?
@@ -180,6 +182,8 @@ module TSOS {
             this.krnShutdown();
         }
 
-        public krnCreateProcess
+        //public krnExecuteProcess(pcb_process: PCB): void {
+        //    _KernelInterruptQueue.enqueue(new Interrupt(_IRQ_Counter, pcb_process));
+        //}
     }
 }
