@@ -6,7 +6,7 @@ module TSOS {
 
         
         public fetchMemory(index) {
-            return _Memory.tsosMemory[index];
+            return _Memory.tsosMemory[index + _current_PCB_Section];
         }
 
         public fetchAllMemory() {

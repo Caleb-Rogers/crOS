@@ -129,6 +129,8 @@ module TSOS {
             // page from its cache, which is not what we want.
         }
 
+
+        /* ============ GUI Functions ============ */
         public static dynamicHostTime(): void {
             var runningTime = new Date().toLocaleTimeString();
             document.getElementById("time").innerHTML=runningTime;
@@ -151,17 +153,17 @@ module TSOS {
             var mem_location = 0;
             var hex_value = 0;   
             var k = 0;                  
-            for(let i=0; i <_Memory.tsosMemory.length; i++) {
+            for(let i=0; i<_Memory.tsosMemory.length; i++) {
                 if (hex_value == 0 || hex_value == 8) {
-                    mem_input += "<tr><td> 0x00" + String(hex_value) + "</td>";
+                    mem_input += "<tr><td> 0x00" + hex_value.toString(16).toUpperCase() + "</td>";
                     hex_value += 8;
                 }
                 else if(hex_value > 248) {
-                    mem_input += "<tr><td> 0x" + String(hex_value) + "</td>";
+                    mem_input += "<tr><td> 0x" + hex_value.toString(16).toUpperCase() + "</td>";
                     hex_value += 8; 
                 }
                 else{
-                    mem_input += "<tr><td> 0x0" + String(hex_value) + "</td>";
+                    mem_input += "<tr><td> 0x0" + hex_value.toString(16).toUpperCase() + "</td>";
                     hex_value += 8; 
                 }
                 for(let j=0; j< row_length; j++) {
@@ -217,8 +219,8 @@ module TSOS {
         }
 
         public static updateGUI_CPU_(): void {
-            document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
-            document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
+            document.getElementById("cpuPC").innerHTML = _CPU.PC.toString(16).toUpperCase();
+            document.getElementById("cpuIR").innerHTML = _CPU.IR;
             document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
             document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
             document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);

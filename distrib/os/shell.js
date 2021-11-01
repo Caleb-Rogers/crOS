@@ -369,30 +369,36 @@ var TSOS;
                 }
             }
             if (isHexTrue) {
-                _StdOut.putText("Appropriate values were entered into the User Program Input");
+                _StdOut.putText("[SUCCESS] - Appropriate hex values were entered");
+                _StdOut.advanceLine();
                 // reset CPU
                 _CPU.init();
                 /* Create and Populate New Process Control Block */
-                // create new PCB
-                var PCB = new TSOS.PCB();
-                // assign & increment Process ID
-                PCB.PID = _PCB_PID;
-                _PCB_PID++;
-                // assign PCB state & memory
-                PCB.State = "Resident";
-                PCB.Location = "Memory";
-                // add New PCB to Process List
-                _PCBList.push(PCB);
-                /* Load user program into Memory and update GUI */
-                // load memory
-                _MemoryManager.clsMemory();
-                _MemoryManager.loadMemory(condensed_input);
-                // update GUI
-                TSOS.Control.updateGUI_Memory_();
-                TSOS.Control.updateGUI_PCB_();
-                // Output
-                console.log("PCB (" + String(PCB.PID) + ") was added. There are currently" + String(_PCBList.length) + " stored processes.");
-                _StdOut.putText("Process ID Number: " + String(PCB.PID));
+                if (_PCB_PID < 3) {
+                    // create new PCB
+                    var PCB = new TSOS.PCB();
+                    // assign & increment Process ID
+                    PCB.PID = _PCB_PID;
+                    _PCB_PID++;
+                    // assign PCB state & memory
+                    PCB.State = "Resident";
+                    PCB.Location = "Memory";
+                    // add New PCB to Process List
+                    _PCBList.push(PCB);
+                    /* Load user program into Memory and update GUI */
+                    // load memory
+                    _MemoryManager.loadMemory(condensed_input, PCB.PID);
+                    // update GUI
+                    TSOS.Control.updateGUI_Memory_();
+                    TSOS.Control.updateGUI_PCB_();
+                    TSOS.Control.updateGUI_CPU_();
+                    // Output
+                    console.log("PCB (" + String(PCB.PID) + ") was added. There are currently " + String(_PCBList.length) + " stored processes.");
+                    _StdOut.putText("Process ID Number: " + String(PCB.PID));
+                }
+                else {
+                    _StdOut.putText("[MEMORY ALLOCATION EXCEEDED] - Memory already contains 3 loaded processes.");
+                }
             }
             else {
                 _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
@@ -407,14 +413,22 @@ var TSOS;
                 for (let i = 0; i < _PCBList.length; i++) {
                     if (_PCBList[i].PID == pid_input) {
                         valid_pid = true;
-                        _current_PCB_PID = _PCBList[i].PID;
-                        var pcb_process = _PCBList[i];
                         _PCBList[i].State = "Running";
+                        _current_PCB_PID = _PCBList[i].PID;
+                        if (pid_input == 0) {
+                            _current_PCB_Section = 0;
+                        }
+                        else if (pid_input == 1) {
+                            _current_PCB_Section = 256;
+                        }
+                        else if (pid_input == 2) {
+                            _current_PCB_Section = 512;
+                        }
                         break;
                     }
                 }
                 // validate the found process's state
-                if (valid_pid && pcb_process.State != "Terminated" && pcb_process.State != "Complete") {
+                if (valid_pid) {
                     // update isExecuting
                     _CPU.isExecuting = true;
                     // Update CPU & PCB GUIs

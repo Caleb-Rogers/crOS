@@ -35,10 +35,8 @@ var TSOS;
             _Kernel.krnTrace('CPU cycle');
             // TODO: Accumulate CPU usage and profiling statistics here.
             // Do the real work here. Be sure to set this.isExecuting appropriately.
-            if (_Memory.mem_counter == _Memory.mem_used - 1) {
-                _CPU.isExecuting = false;
-            }
-            _Memory.mem_counter++;
+            /* Execute a Process by Running through instructions
+            in Memory and updating CPU & PCB GUI */
             // Run next op code
             this.runOPcode();
             // Update Current PCB
@@ -96,12 +94,21 @@ var TSOS;
                     this.SYS();
                     break;
                 default:
-                    _StdOut.putText("Invalid Op Code" + _PCBList[_current_PCB_PID]);
-                    _StdOut.advanceLine();
+                    _PCBList[_current_PCB_PID].State = "Terminated";
+                    _CPU.isExecuting = false;
             }
         }
         storePCB() {
-            if (_CPU.isExecuting == false) {
+            if ((_CPU.isExecuting == false) && (_PCBList[_current_PCB_PID].State == "Terminated")) {
+                _StdOut.advanceLine();
+                _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
+                _StdOut.advanceLine();
+                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] has been Terminated");
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
+            }
+            else if (_CPU.isExecuting == false) {
+                // update completed PCB
                 _PCBList[_current_PCB_PID].PC = this.PC;
                 _PCBList[_current_PCB_PID].IR = this.IR;
                 _PCBList[_current_PCB_PID].Acc = this.Acc;
@@ -109,8 +116,14 @@ var TSOS;
                 _PCBList[_current_PCB_PID].Yreg = this.Yreg;
                 _PCBList[_current_PCB_PID].Zflag = this.Zflag;
                 _PCBList[_current_PCB_PID].State = "Completed";
+                // output success and new line
+                _StdOut.advanceLine();
+                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] Successfully Completed!");
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
             }
             else {
+                // update PCB every instruction
                 _PCBList[_current_PCB_PID].PC = this.PC;
                 _PCBList[_current_PCB_PID].IR = this.IR;
                 _PCBList[_current_PCB_PID].Acc = this.Acc;
@@ -123,22 +136,25 @@ var TSOS;
         /* ============ 6502 Machine Instructions ============ */
         // A9 - LDA - Load accumulator with constant
         LDAC() {
+            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
             this.PC += 2;
             this.IR = "A9";
-            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
+            console.log("ACC: " + parseInt(_MemoryAccessor.fetchMemory(this.PC - 1), 16));
+            console.log("fetch mem: " + _MemoryAccessor.fetchMemory(this.PC - 1));
+            console.log("P.C.: " + (this.PC - 1));
         }
         // AD - LDA  - Load accumulator from memory
         LDAM() {
             var mem_location = _MemoryAccessor.littleEndianAddress();
+            this.Acc = Number(_MemoryAccessor.fetchMemory(mem_location));
             this.PC += 3;
             this.IR = "AD";
-            this.Acc = Number(_MemoryAccessor.fetchMemory(mem_location));
         }
         // 8D - STA  - Store accumulator in memory
         STA() {
             var mem_location = _MemoryAccessor.littleEndianAddress();
-            var decToHex = this.Acc.toString(16).toUpperCase();
-            _Memory.tsosMemory[mem_location] = decToHex;
+            var acc_to_mem = this.Acc.toString(16).toUpperCase();
+            _Memory.tsosMemory[mem_location] = acc_to_mem;
             TSOS.Control.updateGUI_Memory_();
             this.PC += 3;
             this.IR = "8D";
@@ -146,35 +162,35 @@ var TSOS;
         // 6D - ADC - Add with Carry
         ADC() {
             var memory = _MemoryAccessor.fetchMemory(_MemoryAccessor.littleEndianAddress());
+            this.Acc += parseInt(memory, 16);
             this.PC += 3;
             this.IR = "6D";
-            this.Acc += parseInt(memory, 16);
         }
         // A2 - LDX - Load X register with constant
         LDXC() {
+            this.Xreg = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
             this.PC += 2;
             this.IR = "A2";
-            this.Xreg = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
         }
         // AE - LDX - Load X register from memory
         LDXM() {
             var mem_location = _MemoryAccessor.littleEndianAddress();
+            this.Xreg = Number(_MemoryAccessor.fetchMemory(mem_location));
             this.PC += 3;
             this.IR = "AE";
-            this.Xreg = Number(_MemoryAccessor.fetchMemory(mem_location));
         }
         // A0 - LDY - Load Y register with constant 
         LDYC() {
+            this.Yreg = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
             this.PC += 2;
             this.IR = "A0";
-            this.Yreg = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
         }
         // AC - LDY - Load Y register from memory
         LDYM() {
             var mem_location = _MemoryAccessor.littleEndianAddress();
+            this.Yreg = Number(_MemoryAccessor.fetchMemory(mem_location));
             this.PC += 3;
             this.IR = "AC";
-            this.Yreg = Number(_MemoryAccessor.fetchMemory(mem_location));
         }
         // EA - NOP - No Operation
         NOP() {
@@ -200,9 +216,19 @@ var TSOS;
         }
         // D0 - BNE - Branch n bytes if Z flag = 0
         BNE() {
-            /*
-            ...
-            */
+            if (this.Zflag == 0) {
+                var bytes_to_branch = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
+                if ((bytes_to_branch + this.PC) > 256) {
+                    this.PC = (this.PC + bytes_to_branch) % 256;
+                }
+                else {
+                    this.PC += bytes_to_branch;
+                }
+            }
+            else {
+                this.PC += 2;
+            }
+            this.IR = "D0";
         }
         // EE - INC - Increment value of a byte
         INC() {
@@ -227,9 +253,11 @@ var TSOS;
                     Y_location += 1;
                 }
                 _StdOut.putText(print);
+                _StdOut.advanceLine();
+                _OsShell.putPrompt();
             }
-            this.IR = "FF";
             this.PC += 1;
+            this.IR = "FF";
         }
     }
     TSOS.Cpu = Cpu;

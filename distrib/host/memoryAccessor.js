@@ -3,7 +3,7 @@ var TSOS;
     class MemoryAccessor {
         constructor() { }
         fetchMemory(index) {
-            return _Memory.tsosMemory[index];
+            return _Memory.tsosMemory[index + _current_PCB_Section];
         }
         fetchAllMemory() {
             return _Memory.tsosMemory;
