@@ -4,28 +4,28 @@ module TSOS {
 
         constructor(public PID: number = 0,                 // ProcessID
                     public PC: number = 0,                  // ProgramCounter
-                    public IR: string = "",                 // Instruction Register    
+                    public IR: string = "[IR]",                 // Instruction Register    
                     public Acc: number = 0,                 // Accumulator
                     public Xreg: number = 0,                // X Register
                     public Yreg: number = 0,                // Y Register 
                     public Zflag: number = 0,               // Z Flag
                     public Priority: number = 0,            // Priority
-                    public State: string = "",          // isRunning? State
-                    public Location: string = "",           // Process Location
+                    public State: string = "Resident",          // isRunning? State
+                    public Location: string = "Memory",           // Process Location
                     ) {
         }
 
         public init(): void {
-            this.PID = 0;
+            this.PID = _PCB_PID;
             this.PC = 0;
-            this.IR = "";
+            this.IR = "[empty]";
             this.Acc = 0;
             this.Xreg = 0;
             this.Yreg = 0;
             this.Zflag = 0;
             this.Priority = 0;
-            this.State = "";
-            this.Location = "";
+            this.State = "Resident";
+            this.Location = "Memory";
         }
     }
 }

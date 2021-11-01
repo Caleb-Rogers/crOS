@@ -129,6 +129,8 @@ module TSOS {
             // page from its cache, which is not what we want.
         }
 
+
+        /* ============ GUI Functions ============ */
         public static dynamicHostTime(): void {
             var runningTime = new Date().toLocaleTimeString();
             document.getElementById("time").innerHTML=runningTime;
@@ -143,35 +145,88 @@ module TSOS {
             _Kernel.krnShutdown();
             clearInterval(_hardwareClockID);
         }
+        
+        public static updateGUI_Memory_(): void {          
+            var memory_table = document.getElementById("tblMem");
+            var mem_input = "";
+            var row_length = 8;
+            var mem_location = 0;
+            var hex_value = 0;   
+            var k = 0;                  
+            for(let i=0; i<_Memory.tsosMemory.length; i++) {
+                if (hex_value == 0 || hex_value == 8) {
+                    mem_input += "<tr><td> 0x00" + hex_value.toString(16).toUpperCase() + "</td>";
+                    hex_value += 8;
+                }
+                else if(hex_value > 248) {
+                    mem_input += "<tr><td> 0x" + hex_value.toString(16).toUpperCase() + "</td>";
+                    hex_value += 8; 
+                }
+                else{
+                    mem_input += "<tr><td> 0x0" + hex_value.toString(16).toUpperCase() + "</td>";
+                    hex_value += 8; 
+                }
+                for(let j=0; j< row_length; j++) {
+                    if(k < _Memory.tsosMemory.length) {
+                        mem_input += "<td>" + _Memory.tsosMemory[k] + "</td>"; 
+                        mem_location = mem_location + 1;
+                        k = k + 1;
+                    }
+                    else{
+                        mem_input += "<td>" + "00" + "</td>"; 
 
-        public static updateMemory(): void {          
-
+                    }
+                }
+                mem_input += "</tr>";
+            }
+            memory_table.innerHTML = mem_input;
+            console.log("[Memory Updated]");
         }
 
-        public static updateCPU(): void {
-            for (var i=0; i<_PCBList.length; i++) {
-                document.getElementById("cpuPC").innerHTML = String(_CPU.PC);
-                document.getElementById("cpuIR").innerHTML = String(_CPU.IR);
-                document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
-                document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
-                document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
-                document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+        public static updateGUI_PCB_() {
+            var processTable = <HTMLTableElement>document.getElementById("tblPCB");
+            
+            // clear PCB table
+            for (var i = processTable.rows.length; i > 1; i--){
+                processTable.deleteRow(i-1);
+            }
+            // insert rows for every process stored
+            for (var i = 0; i < _PCBList.length; i++) {
+                // Insert a row
+                var row = processTable.insertRow(i + 1);
+                // Insert PCB values
+                var pid_cell = row.insertCell(0);
+                pid_cell.innerHTML = String(_PCBList[i].PID);
+                var pc_cell = row.insertCell(1);
+                pc_cell.innerHTML = String(_PCBList[i].PC);
+                var ir_cell = row.insertCell(2);
+                ir_cell.innerHTML = _PCBList[i].IR;
+                var acc_cell = row.insertCell(3);
+                acc_cell.innerHTML = String(_PCBList[i].Acc);
+                var x_cell = row.insertCell(4);
+                x_cell.innerHTML = String(_PCBList[i].Xreg);
+                var y_cell = row.insertCell(5);
+                y_cell.innerHTML = String(_PCBList[i].Yreg);
+                var z_cell = row.insertCell(6);
+                z_cell.innerHTML = String(_PCBList[i].Zflag);
+                var priority_cell = row.insertCell(7);
+                priority_cell.innerHTML = String(_PCBList[i].Priority);
+                var state_cell = row.insertCell(8);
+                state_cell.innerHTML = _PCBList[i].State;
+                var location_cell = row.insertCell(9);
+                location_cell.innerHTML = _PCBList[i].Location;
             }
         }
 
-        public static updatePCB(): void {
-            for (var i=0; i<_PCBList.length; i++) {
-                document.getElementById("pcbPID").innerHTML = String(_PCBList[i].PID);
-                document.getElementById("pcbPC").innerHTML = String(_PCBList[i].PC);
-                document.getElementById("pcbIR").innerHTML = _PCBList[i].IR;
-                document.getElementById("pcbACC").innerHTML = String(_PCBList[i].Acc);
-                document.getElementById("pcbX").innerHTML = String(_PCBList[i].Xreg);
-                document.getElementById("pcbY").innerHTML = String(_PCBList[i].Yreg);
-                document.getElementById("pcbZ").innerHTML = String(_PCBList[i].Zflag);
-                document.getElementById("pcbPRI").innerHTML = String(_PCBList[i].Priority);
-                document.getElementById("pcbSTA").innerHTML = _PCBList[i].State;
-                document.getElementById("pcbLOC").innerHTML = _PCBList[i].Location;
-            }
+        public static updateGUI_CPU_(): void {
+            document.getElementById("cpuPC").innerHTML = _CPU.PC.toString(16).toUpperCase();
+            document.getElementById("cpuIR").innerHTML = _CPU.IR;
+            document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
+            document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
+            document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
+            document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
+
+            console.log("[CPU Updated]");
         }
     }
 }

@@ -31,6 +31,8 @@ var TSOS;
             this.krnTrace(_krnKeyboardDriver.status);
             // Initialize MemoryManager
             _MemoryManager = new TSOS.MemoryManager();
+            // Initialize Memory GUI
+            TSOS.Control.updateGUI_Memory_();
             //
             // ... more?
             //

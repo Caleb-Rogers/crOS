@@ -36,7 +36,7 @@
    <!-- Other Routines -->
    <script type="text/javascript" src="distrib/utils.js"></script>
    <!-- Uncomment the line below to enable GLaDOS testing. -->
-   <script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip2.js"></script>
+   <!--<script type="text/javascript" src="http://alanclasses.github.io/TSOS/test/glados-ip2.js"></script>-->
    
 </head>
 
@@ -113,19 +113,20 @@
    </div>
 </div>
 
-<div id="divMem" style="float: left">
+<div id="divMem" style="float:left; padding-right:5px;">
    <label>
       Memory
       <br>
-      <table id="tblMem">
+      
+      <table id="tblMem" style="display:block; height:200px; overflow-y:scroll;"> 
          <tbody>
-            <!-- TODO: Implement Memory -->
+            <!-- Memory is generated from Control -->
          </tbody>
       </table>
    </label>
 </div>
 
-<div id="divCPU" style="float: left;">
+<div id="divCPU" style="float: left; padding-right:5px; padding-bottom:17px;">
    <label>
       CPU
       <br>

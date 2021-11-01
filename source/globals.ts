@@ -14,7 +14,7 @@
 const APP_NAME: string    = "crOS";   // Seemed fitting
 const APP_VERSION: string = "2.001";   // Wow, 2 decades under my belt
 
-const CPU_CLOCK_INTERVAL: number = 100;   // This is in ms (milliseconds) so 1000 = 1 second.
+const CPU_CLOCK_INTERVAL: number = 200;   // This is in ms (milliseconds) so 1000 = 1 second.
 
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
@@ -33,8 +33,11 @@ var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
+var _PCB_PID: number = 0;
+var _current_PCB_PID = -1;
+var _current_PCB_Section = 0; 
+var _PCB: TSOS.PCB;
 var _PCBList: TSOS.PCB[] = [];
-var _CurrPCB: TSOS.PCB = null;
 
 
 var _OSclock: number = 0;  // Page 23.
@@ -53,7 +56,8 @@ var _Trace: boolean = true;              // Default the OS trace to be on.
 var _Kernel: TSOS.Kernel;
 var _KernelInterruptQueue: TSOS.Queue = null;
 var _KernelInputQueue: TSOS.Queue = null; 
-var _KernelBuffers = null; 
+var _KernelBuffers = null;
+
 
 // Standard input and output
 var _StdIn:  TSOS.Console = null; 
