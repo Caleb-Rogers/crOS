@@ -80,6 +80,7 @@ module TSOS {
             // .. enable the Halt and Reset buttons ...
             (<HTMLButtonElement>document.getElementById("btnHaltOS")).disabled = false;
             (<HTMLButtonElement>document.getElementById("btnReset")).disabled = false;
+            (<HTMLButtonElement>document.getElementById("btnEnableSingleStep")).disabled = false;
 
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
@@ -127,6 +128,32 @@ module TSOS {
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+
+        public static hostBtnEnableSingleStep_click(btn): void{
+            // change single step to on
+            _enabled_Single_Step = true;
+            // disable this button
+            btn.disabled = true;
+            // enable the single step off button
+            (<HTMLButtonElement>document.getElementById("btnDisableSingleStep")).disabled = false;
+            // enable the step button
+            (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = false;
+        }
+
+        public static hostBtnDisableSingleStep_click(btn): void {
+            // change single step to off
+            _enabled_Single_Step = false;
+            // disable this button
+            btn.disabled = true;
+            // disable the step button
+            (<HTMLButtonElement>document.getElementById("btnNextStep")).disabled = true;
+            // enable the single step on button
+            (<HTMLButtonElement>document.getElementById("btnEnableSingleStep")).disabled = false;
+        }
+
+        public static hostBtnNextStep_click(btn): void {
+            _Next_Step = true;
         }
 
 
@@ -198,7 +225,7 @@ module TSOS {
                 var pid_cell = row.insertCell(0);
                 pid_cell.innerHTML = String(_PCBList[i].PID);
                 var pc_cell = row.insertCell(1);
-                pc_cell.innerHTML = String(_PCBList[i].PC);
+                pc_cell.innerHTML = _PCBList[i].PC.toString(16).toUpperCase();
                 var ir_cell = row.insertCell(2);
                 ir_cell.innerHTML = _PCBList[i].IR;
                 var acc_cell = row.insertCell(3);
