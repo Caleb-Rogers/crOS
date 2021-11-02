@@ -431,6 +431,8 @@ var TSOS;
                 if (valid_pid) {
                     // update isExecuting
                     _CPU.isExecuting = true;
+                    // disables next stepping
+                    _Next_Step = false;
                     // Update CPU & PCB GUIs
                     TSOS.Control.updateGUI_CPU_();
                     TSOS.Control.updateGUI_PCB_();

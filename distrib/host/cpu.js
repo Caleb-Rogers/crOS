@@ -108,7 +108,7 @@ var TSOS;
                 _OsShell.putPrompt();
             }
             else if (_CPU.isExecuting == false) {
-                // update completed PCB
+                // update PCB State
                 _PCBList[_current_PCB_PID].PC = this.PC;
                 _PCBList[_current_PCB_PID].IR = this.IR;
                 _PCBList[_current_PCB_PID].Acc = this.Acc;
@@ -218,8 +218,8 @@ var TSOS;
         BNE() {
             if (this.Zflag == 0) {
                 var bytes_to_branch = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
-                if ((bytes_to_branch + this.PC) > 256) {
-                    this.PC = (this.PC + bytes_to_branch) % 256;
+                if (bytes_to_branch + this.PC > 256) {
+                    this.PC = ((this.PC + 1 + bytes_to_branch) % 256) + 1;
                 }
                 else {
                     this.PC += bytes_to_branch;
@@ -236,7 +236,7 @@ var TSOS;
             var increment = parseInt(_MemoryAccessor.fetchMemory(mem_location), 16);
             increment += 1;
             _Memory.tsosMemory[mem_location] = increment.toString(16);
-            TSOS.Control.updateGUI_Memory_;
+            TSOS.Control.updateGUI_Memory_();
             this.PC += 3;
             this.IR = "EE";
         }

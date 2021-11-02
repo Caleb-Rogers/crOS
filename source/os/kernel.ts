@@ -86,9 +86,20 @@ module TSOS {
                 // TODO (maybe): Implement a priority queue based on the IRQ number/id to enforce interrupt priority.
                 var interrupt = _KernelInterruptQueue.dequeue();
                 this.krnInterruptHandler(interrupt.irq, interrupt.params);
-            } else if (_CPU.isExecuting) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
+            } 
+            else if (_enabled_Single_Step) { // If there are no interrupts then run one CPU cycle if there is anything being processed.
+                if ((_CPU.isExecuting) && (_Next_Step)) {
+                    _CPU.cycle();
+                    _Next_Step = false;
+                }
+                else {
+                    this.krnTrace("Idle");
+                }
+            } 
+            else if (_CPU.isExecuting) {
                 _CPU.cycle();
-            } else {                       // If there are no interrupts and there is nothing being executed then just be idle.
+            }
+            else {                       // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
             }
 
@@ -181,9 +192,5 @@ module TSOS {
             Control.BSOD(msg);
             this.krnShutdown();
         }
-
-        //public krnExecuteProcess(pcb_process: PCB): void {
-        //    _KernelInterruptQueue.enqueue(new Interrupt(_IRQ_Counter, pcb_process));
-        //}
     }
 }

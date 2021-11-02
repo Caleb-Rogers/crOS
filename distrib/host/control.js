@@ -64,6 +64,7 @@ var TSOS;
             // .. enable the Halt and Reset buttons ...
             document.getElementById("btnHaltOS").disabled = false;
             document.getElementById("btnReset").disabled = false;
+            document.getElementById("btnEnableSingleStep").disabled = false;
             // .. set focus on the OS console display ...
             document.getElementById("display").focus();
             // ... Create and initialize the CPU (because it's part of the hardware)  ...
@@ -102,6 +103,29 @@ var TSOS;
             // That boolean parameter is the 'forceget' flag. When it is true it causes the page to always
             // be reloaded from the server. If it is false or not specified the browser may reload the
             // page from its cache, which is not what we want.
+        }
+        static hostBtnEnableSingleStep_click(btn) {
+            // change single step to on
+            _enabled_Single_Step = true;
+            // disable this button
+            btn.disabled = true;
+            // enable the single step off button
+            document.getElementById("btnDisableSingleStep").disabled = false;
+            // enable the step button
+            document.getElementById("btnNextStep").disabled = false;
+        }
+        static hostBtnDisableSingleStep_click(btn) {
+            // change single step to off
+            _enabled_Single_Step = false;
+            // disable this button
+            btn.disabled = true;
+            // disable the step button
+            document.getElementById("btnNextStep").disabled = true;
+            // enable the single step on button
+            document.getElementById("btnEnableSingleStep").disabled = false;
+        }
+        static hostBtnNextStep_click(btn) {
+            _Next_Step = true;
         }
         /* ============ GUI Functions ============ */
         static dynamicHostTime() {
@@ -166,7 +190,7 @@ var TSOS;
                 var pid_cell = row.insertCell(0);
                 pid_cell.innerHTML = String(_PCBList[i].PID);
                 var pc_cell = row.insertCell(1);
-                pc_cell.innerHTML = String(_PCBList[i].PC);
+                pc_cell.innerHTML = _PCBList[i].PC.toString(16).toUpperCase();
                 var ir_cell = row.insertCell(2);
                 ir_cell.innerHTML = _PCBList[i].IR;
                 var acc_cell = row.insertCell(3);

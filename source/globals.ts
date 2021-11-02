@@ -39,6 +39,10 @@ var _current_PCB_Section = 0;
 var _PCB: TSOS.PCB;
 var _PCBList: TSOS.PCB[] = [];
 
+// Single Step
+var _enabled_Single_Step: boolean = false;
+var _Next_Step: boolean = false;
+
 
 var _OSclock: number = 0;  // Page 23.
 

@@ -497,6 +497,8 @@ module TSOS {
                 if (valid_pid) {
                     // update isExecuting
                     _CPU.isExecuting = true;
+                    // disables next stepping
+                    _Next_Step = false;
                     // Update CPU & PCB GUIs
                     Control.updateGUI_CPU_();
                     Control.updateGUI_PCB_();
