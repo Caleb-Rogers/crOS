@@ -12,7 +12,7 @@
 //
 const APP_NAME = "crOS"; // Seemed fitting
 const APP_VERSION = "2.001"; // Wow, 2 decades under my belt
-const CPU_CLOCK_INTERVAL = 200; // This is in ms (milliseconds) so 1000 = 1 second.
+const CPU_CLOCK_INTERVAL = 100; // This is in ms (milliseconds) so 1000 = 1 second.
 const TIMER_IRQ = 0; // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
 // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ = 1;
@@ -41,6 +41,7 @@ var _Next_Step = false;
 // Round Robin Quantum
 var _Quantum = 6;
 var _OSclock = 0; // Page 23.
+// Status
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().
 var _DrawingContext; // = _Canvas.getContext("2d");  // Assigned here for type safety, but re-initialized in Control.hostInit() for OCD and logic.

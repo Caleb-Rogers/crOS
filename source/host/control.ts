@@ -104,7 +104,7 @@ module TSOS {
             // Set initial host display upon starting system 
             var today = new Date().toLocaleDateString();
             var runningTime = new Date().toLocaleTimeString();
-            var currentStat = "We have tip off!";
+            var currentStat = "Engines Running";
             document.getElementById("date").innerHTML=today;
             document.getElementById("time").innerHTML=runningTime;
             document.getElementById("status").innerHTML=currentStat;
@@ -161,6 +161,10 @@ module TSOS {
         public static dynamicHostTime(): void {
             var runningTime = new Date().toLocaleTimeString();
             document.getElementById("time").innerHTML=runningTime;
+        }
+
+        public static dynamicHostStatus(): void {
+            document.getElementById("status").innerHTML=status;
         }
 
         public static BSOD(msg): void {

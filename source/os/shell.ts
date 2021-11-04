@@ -412,7 +412,7 @@ module TSOS {
         }
 
         public shellWhere(args: string[]) {
-            _StdOut.putText("Madison Square Garden");
+            _StdOut.putText("Wayne's World, Wayne's World");
         }
 
         public shellPie(args: string[]) {
@@ -432,16 +432,17 @@ module TSOS {
 
         public shellStatus(args: string[]) {
             if (args.length > 0) {
-                _OsShell.hostStatus = "";
                 var i = 0;
                 while (args[i] != null) {
                     _OsShell.hostStatus = _OsShell.hostStatus + args[i] + " ";
-                    i++;
+                    i++
                 }
-                document.getElementById("status").innerHTML=_OsShell.hostStatus;
+                document.getElementById("status").innerHTML = _OsShell.hostStatus;
             } else {
                 _StdOut.putText("Usage: status <string>  Please supply a string.");
             }
+
+            console.log("Host Status: " + _OsShell.hostStatus + ", or " + String(_OsShell.hostStatus) + ", or " + document.getElementById("status").innerHTML); // works on manual entry
         }
 
         public shellLoad() {
@@ -526,7 +527,7 @@ module TSOS {
                         _StdOut.putText("Process [" + pid_input + "] was NOT found. Please enter a valid <PID>.");
                     }
                     else if (_PCB_Current.State != "Resident") {
-                        _StdOut.putText("Process [" + pid_input + "] is not available to be ran. Make sure the specified process is Resident before running.");
+                        _StdOut.putText("Process [" + pid_input + "] is not available to be run. Make sure the specified process is Resident before running.");
                     }
                 }
             }
@@ -552,17 +553,17 @@ module TSOS {
         }
 
         public shellRunAll() {
-            // execute all programs at once
-            for (var i=0; i<_PCB_ResidentList.length; i++) {
-                if (_PCB_ResidentList[i].State = "Resident") {
+            for (var i=0; i<_PCB_ResidentList.length; i++) { // for now...
+                // validate the found process's state
+                if (_PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
                     // update process state
-                    _PCB_ResidentList[i].State = "Ready";
-                    // add to Ready Queue
-                    _PCB_ReadyQ.enqueue(_PCB_ResidentList[i]);
+                    _PCB_Current.State = "Ready";
+                    // allow process to run in CPU
+                    _CPU.isExecuting = true;
                 }
             }
             // call scheduler to run processes
-            _Scheduler.determineSchedule();
+            //_Scheduler.determineSchedule();
         }
 
         public shellPS() {
@@ -616,12 +617,14 @@ module TSOS {
 
         public shellQuantum(args: string[]) {
             // let the user set the Round Robin quantum 
-            if (args.length = 1) {
+            if ((args.length = 1) && !(isNaN(Number(args[0])))) {
                 _Quantum = parseInt(args[0]);
+                _StdOut.putText("Successfully Set the Round Robin Quantum to " + String(_Quantum));
             } 
             else {
-                _StdOut.putText("Supplied <Quantum> was not valid. Please supply an integer that will act as the Quantum and measured in CPU cycles.");
+                _StdOut.putText("Supplied <Quantum> was not valid. Please supply an integer that will act as the Round Robin Quantum and measured in CPU cycles.");
             }
         }
     }
 }
+    
