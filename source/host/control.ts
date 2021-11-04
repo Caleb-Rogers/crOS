@@ -211,14 +211,11 @@ module TSOS {
         }
 
         public static updateGUI_PCB_() {
-            var processTable = <HTMLTableElement>document.getElementById("tblPCB");
-            
             // clear PCB table
-            for (var i = processTable.rows.length; i > 1; i--){
-                processTable.deleteRow(i-1);
-            }
+            this.clearGUI_PCB_();
             // insert rows for every process stored
-            for (var i = 0; i < _PCBList.length; i++) {
+            var processTable = <HTMLTableElement>document.getElementById("tblPCB");
+            for (var i=0; i<_PCBList.length; i++) {
                 // Insert a row
                 var row = processTable.insertRow(i + 1);
                 // Insert PCB values
@@ -242,6 +239,14 @@ module TSOS {
                 state_cell.innerHTML = _PCBList[i].State;
                 var location_cell = row.insertCell(9);
                 location_cell.innerHTML = _PCBList[i].Location;
+            }
+        }
+
+        public static clearGUI_PCB_(): void {
+            // clear PCB table
+            var processTable = <HTMLTableElement>document.getElementById("tblPCB");
+            for (var i = processTable.rows.length; i > 1; i--){
+                processTable.deleteRow(i-1);
             }
         }
 

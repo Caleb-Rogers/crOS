@@ -33,15 +33,17 @@ var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
-var _PCB_PID: number = 0;
-var _current_PCB_PID = -1;
-var _current_PCB_Section = 0; 
+var _current_PCB_PID: number = 0;
+var _current_PCB_Section: number = 0; 
 var _PCB: TSOS.PCB;
 var _PCBList: TSOS.PCB[] = [];
 
 // Single Step
 var _enabled_Single_Step: boolean = false;
 var _Next_Step: boolean = false;
+
+// Round Robin Quantum
+var _Quantum: number = 6;
 
 
 var _OSclock: number = 0;  // Page 23.

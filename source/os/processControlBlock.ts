@@ -16,7 +16,7 @@ module TSOS {
         }
 
         public init(): void {
-            this.PID = _PCB_PID;
+            this.PID = _current_PCB_PID;
             this.PC = 0;
             this.IR = "[empty]";
             this.Acc = 0;

@@ -26,14 +26,15 @@ var _Memory;
 var _MemoryAccessor; //
 // Software (OS)
 var _MemoryManager = null;
-var _PCB_PID = 0;
-var _current_PCB_PID = -1;
+var _current_PCB_PID = 0;
 var _current_PCB_Section = 0;
 var _PCB;
 var _PCBList = [];
 // Single Step
 var _enabled_Single_Step = false;
 var _Next_Step = false;
+// Round Robin Quantum
+var _Quantum = 6;
 var _OSclock = 0; // Page 23.
 var _Mode = 0; // (currently unused)  0 = Kernel Mode, 1 = User Mode.  See page 21.
 var _Canvas; // Initialized in Control.hostInit().

@@ -53,5 +53,35 @@ module TSOS {
                 return hex_memory;
             }
         }
+
+        /*
+        public clearMemorySection(pcb_pid): void {
+            // Update how much memory is being used
+            _Memory.mem_used = 0;
+            // Insert hex values into memory depending on section
+            if (pcb_pid == 0) {
+                var mem_index = 0;
+                for (var i=0; i<256; i++) {
+                    _Memory.tsosMemory[mem_index] = "00";
+                    mem_index++;
+                }
+            }
+            else if (pcb_pid == 1) {
+                var mem_index = 256;
+                for (var i=0; i<256; i++) {
+                    _Memory.tsosMemory[mem_index] = "00";
+                    mem_index++;
+                }
+            }
+            else if (pcb_pid == 2) {
+                var mem_index = 512;
+                for (var i=0; i<256; i++) {
+                    _Memory.tsosMemory[mem_index] = "00";
+                    mem_index++;
+                }
+            }
+            console.log((_Memory.mem_used) + " bytes of memory are now being used")
+        }
+        */
     }
 }
