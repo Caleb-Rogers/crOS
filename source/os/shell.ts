@@ -106,7 +106,7 @@ module TSOS {
             // run
             sc = new ShellCommand(this.shellRun,
                 "run",
-                "- Run a program from Memory");
+                "<pid> - Run a program from Memory");
             this.commandList[this.commandList.length] = sc;
 
             // BSOD
@@ -115,8 +115,42 @@ module TSOS {
                 "- Tread lightly... you're playing with fire");
             this.commandList[this.commandList.length] = sc;
 
-            // ps  - list the running processes and their IDs
-            // kill <id> - kills the specified process id.
+            // clearmem
+            sc = new ShellCommand(this.shellClearMem,
+                "clearmem",
+                "- Clears all memory partitions");
+            this.commandList[this.commandList.length] = sc;
+
+            // runall
+            sc = new ShellCommand(this.shellRunAll,
+                "runall",
+                "- executes all programs from Memory");
+            this.commandList[this.commandList.length] = sc;
+
+            // ps
+            sc = new ShellCommand(this.shellPS,
+                "ps",
+                "- displays the PID and state of all stored processes");
+            this.commandList[this.commandList.length] = sc;
+
+            // kill <pid>
+            sc = new ShellCommand(this.shellKill,
+                "kill",
+                "<pid> - kills a specified process");
+            this.commandList[this.commandList.length] = sc;
+
+            // killall
+            sc = new ShellCommand(this.shellKillAll,
+                "killall",
+                "- kills all processes");
+            this.commandList[this.commandList.length] = sc;
+
+            // quantum <int>
+            sc = new ShellCommand(this.shellQuantum,
+                "quantum",
+                "<int> - sets the Round Robin quantum");
+            this.commandList[this.commandList.length] = sc;
+
 
             // Display the initial prompt.
             this.putPrompt();
@@ -433,21 +467,19 @@ module TSOS {
                 _StdOut.putText("[SUCCESS] - Appropriate hex values were entered");
                 _StdOut.advanceLine();
 
-                // reset CPU
-                _CPU.init();
-
                 /* Create and Populate New Process Control Block */
-                if (_PCB_PID < 3) {
+                if (_PCB_Current_PID < 3) {
                     // create new PCB
                     var PCB = new TSOS.PCB();
                     // assign & increment Process ID
-                    PCB.PID = _PCB_PID;
-                    _PCB_PID++;
-                    // assign PCB state & memory
+                    PCB.PID = _PCB_Current_PID;
+                    _PCB_Current_PID++;
+                    // assign PCB state & location & priority
                     PCB.State = "Resident";
                     PCB.Location = "Memory";
-                    // add New PCB to Process List
-                    _PCBList.push(PCB);
+                    PCB.Priority = 32;
+                    // add New PCB to Resident List
+                    _PCB_ResidentList.push(PCB);
 
                     /* Load user program into Memory and update GUI */
                     // load memory
@@ -455,10 +487,9 @@ module TSOS {
                     // update GUI
                     Control.updateGUI_Memory_();
                     Control.updateGUI_PCB_(); 
-                    Control.updateGUI_CPU_();
                     
-                    // Output
-                    console.log("PCB (" + String(PCB.PID) + ") was added. There are currently " + String(_PCBList.length) + " stored processes.");
+                    // Console logging & Shell output
+                    console.log("[shellLoad] - PCB (" + String(PCB.PID) + ") was added. There are currently " + String(_PCB_ResidentList.length) + " PCB's in Resident List.")
                     _StdOut.putText("Process ID Number: " + String(PCB.PID));
                 }
                 else {
@@ -466,45 +497,37 @@ module TSOS {
                 }
             }
             else {
-                _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
+                _StdOut.putText("[INPUT ERROR] - Please supply only hexadecimal values into the User Program Input");
             }
         }
 
         public shellRun(args: string[]) {
             // validate for appropriate user input
-            if (args.length > 0) {
+            if (args.length = 1) {
                 var valid_pid = false;
                 var pid_input = Number(args[0]);
                 // loop through list of processes to find matching PID
-                for (let i=0; i<_PCBList.length; i++) {
-                    if (_PCBList[i].PID == pid_input) {
+                for (let i=0; i<_PCB_ResidentList.length; i++) {
+                    if (_PCB_ResidentList[i].PID == pid_input) {
                         valid_pid = true;
-                        _PCBList[i].State = "Running";
-                        _current_PCB_PID = _PCBList[i].PID;
-                        if (pid_input == 0) {
-                            _current_PCB_Section = 0;
-                        }
-                        else if (pid_input == 1) {
-                            _current_PCB_Section = 256;
-                        }
-                        else if (pid_input == 2) {
-                            _current_PCB_Section = 512;
-                        }
+                        _PCB_Current = _PCB_ResidentList[i];
                         break;
                     }
                 }
                 // validate the found process's state
-                if (valid_pid) {
-                    // update isExecuting
+                if (valid_pid && _PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
+                    // update process state
+                    _PCB_Current.State = "Ready";
+                    // allow process to run in CPU
                     _CPU.isExecuting = true;
-                    // disables next stepping
-                    _Next_Step = false;
-                    // Update CPU & PCB GUIs
-                    Control.updateGUI_CPU_();
-                    Control.updateGUI_PCB_();
                 }
                 else {
-                    _StdOut.putText("Supplied <PID> was not valid. Please Load a new process and run the process with the accompanying <PID>.");
+                    if (!valid_pid) {
+                        _StdOut.putText("Process [" + pid_input + "] was NOT found. Please enter a valid <PID>.");
+                    }
+                    else if (_PCB_Current.State != "Resident") {
+                        _StdOut.putText("Process [" + pid_input + "] is not available to be ran. Make sure the specified process is Resident before running.");
+                    }
                 }
             }
             else {
@@ -512,14 +535,93 @@ module TSOS {
             }
         }
 
-        public shellRunAll() {
-        
-        }
-
         public shellBSOD() {
             let msg:string = "Uh oh... well, even though it was a test, you done f%$ked up";
             _Kernel.krnTrapError(msg);
             (document.getElementById("status")).innerHTML = "[BSOD ERROR]";
+        }
+
+        public shellClearMem() {
+            // clear all memory partitions
+            _Memory.init();
+            Control.updateGUI_Memory_();
+            Control.clearGUI_PCB_();
+            _PCB_Current_PID = 0;
+            _PCB_ResidentList.splice(0, _PCB_ResidentList.length);
+            _StdOut.putText("All Memory partitions were successfully cleared");
+        }
+
+        public shellRunAll() {
+            // execute all programs at once
+            for (var i=0; i<_PCB_ResidentList.length; i++) {
+                if (_PCB_ResidentList[i].State = "Resident") {
+                    // update process state
+                    _PCB_ResidentList[i].State = "Ready";
+                    // add to Ready Queue
+                    _PCB_ReadyQ.enqueue(_PCB_ResidentList[i]);
+                }
+            }
+            // call scheduler to run processes
+            _Scheduler.determineSchedule();
+        }
+
+        public shellPS() {
+            // display the PID and state of all processes
+            for (var i = 0; i < _PCB_ResidentList.length; i++){
+                _StdOut.putText("Process ID: " + _PCB_ResidentList[i].PID + " - State: " + _PCB_ResidentList[i].State);
+                _StdOut.advanceLine();
+            }
+        }
+
+        public shellKill(args: string[]) {
+            // kill one process
+            if (args.length = 1) {
+                var pid_input = Number(args[0]);
+                var found = false;
+                for (var i=0; i<_PCB_ResidentList.length; i++) {
+                    if (_PCB_ResidentList[i] == _PCB_ResidentList[pid_input]) {
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    _PCB_ResidentList[pid_input].State = "Terminated";
+                    _CPU.isExecuting = false;
+                    Control.updateGUI_PCB_();
+                    _StdOut.putText("Successfully Terminated Process [" + pid_input + "]");
+                }
+                else {
+                    _StdOut.putText("Process [" + pid_input + "] was NOT found. Please enter a valid <PID>.");
+                }
+            }
+            else {
+                _StdOut.putText("Please supply a ProcessID integer to kill a specified process");
+            }
+        }
+
+        public shellKillAll() {
+            // kill all process
+            if (_PCB_ResidentList.length > 0) {
+                for (var i=0; i<_PCB_ResidentList.length; i++) {
+                    _PCB_ResidentList[i].State = "Terminated";
+                }
+                _CPU.isExecuting = false;
+                Control.updateGUI_PCB_();
+                _StdOut.putText("Successfully Terminated All Loaded Processes");
+            }
+            else {
+                _StdOut.putText("[ERROR] - There are no loaded processes. Please enter a User Program and load it into memory before terminating.");
+            }
+        }
+
+        public shellQuantum(args: string[]) {
+            // let the user set the Round Robin quantum 
+            if (args.length = 1) {
+                _Quantum = parseInt(args[0]);
+            } 
+            else {
+                _StdOut.putText("Supplied <Quantum> was not valid. Please supply an integer that will act as the Quantum and measured in CPU cycles.");
+            }
         }
     }
 }

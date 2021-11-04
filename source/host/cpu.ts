@@ -41,19 +41,33 @@ module TSOS {
 
             /* Execute a Process by Running through instructions 
             in Memory and updating CPU & PCB GUI */
+            // update current PCB to running
+            _PCB_Current.State = "Running";
+            // update current PCB to CPU
+            this.updateCPU();
             // Run next op code
             this.runOPcode();
             // Update Current PCB
             this.storePCB();
+            // update QuantumCounter
+            _PCB_Current.QuantumCounter++;
             // Update GUI
             Control.updateGUI_PCB_();
             Control.updateGUI_CPU_();
         }
 
+        public updateCPU(): void {
+            this.PC = _PCB_Current.PC;
+            this.IR = _PCB_Current.IR;
+            this.Acc = _PCB_Current.Acc;
+            this.Xreg = _PCB_Current.Xreg;
+            this.Yreg = _PCB_Current.Yreg;
+            this.Zflag = _PCB_Current.Zflag;
+        }
+
         public runOPcode(): void {
             // retrieve op code from memory
             var op_code = _MemoryAccessor.fetchMemory(this.PC);
-            console.log("OP Code returned from Memory: " + op_code);
             
             // determine which assembly instruction
             switch(op_code) {
@@ -72,44 +86,44 @@ module TSOS {
                 case "EE": this.INC();      break;
                 case "FF": this.SYS();      break;
                 default:
-                    _PCBList[_current_PCB_PID].State = "Terminated";
+                    _StdOut.advanceLine();
+                    _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
+                    _StdOut.advanceLine();
+                    _PCB_Current.State = "Terminated";
                     _CPU.isExecuting = false;
                 }
         }
 
         public storePCB(): void {
-            if ((_CPU.isExecuting == false) && (_PCBList[_current_PCB_PID].State == "Terminated")) {
-                _StdOut.advanceLine();
-                _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
-                _StdOut.advanceLine();
-                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] has been Terminated");
+            if ((_CPU.isExecuting == false) && (_PCB_Current.State == "Terminated")) {
+                _StdOut.putText("Process [" + _PCB_Current.PID + "] has been Terminated");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
             }
             else if(_CPU.isExecuting == false) {
-                // update PCB State
-                _PCBList[_current_PCB_PID].PC = this.PC;
-                _PCBList[_current_PCB_PID].IR = this.IR;
-                _PCBList[_current_PCB_PID].Acc = this.Acc;
-                _PCBList[_current_PCB_PID].Xreg = this.Xreg;
-                _PCBList[_current_PCB_PID].Yreg = this.Yreg;
-                _PCBList[_current_PCB_PID].Zflag = this.Zflag;
-                _PCBList[_current_PCB_PID].State = "Completed";
+                // update current PCB
+                _PCB_Current.PC = this.PC;
+                _PCB_Current.IR = this.IR;
+                _PCB_Current.Acc = this.Acc;
+                _PCB_Current.Xreg = this.Xreg;
+                _PCB_Current.Yreg = this.Yreg;
+                _PCB_Current.Zflag = this.Zflag;
+                _PCB_Current.State = "Completed";
                 // output success and new line
                 _StdOut.advanceLine();
-                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] Successfully Completed!");
+                _StdOut.putText("Process [" + _PCB_Current.PID + "] Successfully Completed!");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
             }
             else {
                 // update PCB every instruction
-                _PCBList[_current_PCB_PID].PC = this.PC;
-                _PCBList[_current_PCB_PID].IR = this.IR;
-                _PCBList[_current_PCB_PID].Acc = this.Acc;
-                _PCBList[_current_PCB_PID].Xreg = this.Xreg;
-                _PCBList[_current_PCB_PID].Yreg = this.Yreg;
-                _PCBList[_current_PCB_PID].Zflag = this.Zflag;
-                _PCBList[_current_PCB_PID].State = "Running";
+                _PCB_Current.PC = this.PC;
+                _PCB_Current.IR = this.IR;
+                _PCB_Current.Acc = this.Acc;
+                _PCB_Current.Xreg = this.Xreg;
+                _PCB_Current.Yreg = this.Yreg;
+                _PCB_Current.Zflag = this.Zflag;
+                _PCB_Current.State = "Running";
             }
         }
 
@@ -120,9 +134,6 @@ module TSOS {
             this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
             this.PC += 2;
             this.IR = "A9";
-            console.log("ACC: " +  parseInt(_MemoryAccessor.fetchMemory(this.PC-1), 16));
-            console.log("fetch mem: " + _MemoryAccessor.fetchMemory(this.PC-1));
-            console.log("P.C.: " + (this.PC-1));
         }
         // AD - LDA  - Load accumulator from memory
         public LDAM(): void {
@@ -227,7 +238,7 @@ module TSOS {
                 _StdOut.putText(this.Yreg.toString(16));
             }
             else if(this.Xreg == 2) {
-                var Y_location = this.Yreg;
+                var Y_location = this.Yreg + _Memory.fetchSectionBase(_PCB_Current.PID);
                 var print = "";
                 while(_Memory.tsosMemory[Y_location] != "00") {
                     print += (String.fromCharCode(parseInt(_Memory.tsosMemory[Y_location], 16)));

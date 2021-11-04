@@ -33,6 +33,12 @@ var TSOS;
             _MemoryManager = new TSOS.MemoryManager();
             // Initialize Memory GUI
             TSOS.Control.updateGUI_Memory_();
+            // Initialize Scheduler
+            _Scheduler = new TSOS.Scheduler();
+            // Initialize Ready Queue
+            _PCB_ReadyQ = new TSOS.Queue();
+            // Initialize Current PCB
+            _PCB_Current = new TSOS.PCB();
             //
             // ... more?
             //
@@ -77,6 +83,7 @@ var TSOS;
                 if ((_CPU.isExecuting) && (_Next_Step)) {
                     _CPU.cycle();
                     _Next_Step = false;
+                    //_Scheduler.determineSchedule();
                 }
                 else {
                     this.krnTrace("Idle");
@@ -84,6 +91,7 @@ var TSOS;
             }
             else if (_CPU.isExecuting) {
                 _CPU.cycle();
+                //_Scheduler.determineSchedule();
             }
             else { // If there are no interrupts and there is nothing being executed then just be idle.
                 this.krnTrace("Idle");
@@ -119,6 +127,9 @@ var TSOS;
                 case KEYBOARD_IRQ:
                     _krnKeyboardDriver.isr(params); // Kernel mode device driver
                     _StdIn.handleInput();
+                    break;
+                case CONTEXT_SWITCH_IRQ: // Change the running process
+                    _Scheduler.contextSwitch();
                     break;
                 default:
                     this.krnTrapError("Invalid Interrupt Request. irq=" + irq + " params=[" + params + "]");

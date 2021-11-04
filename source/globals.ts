@@ -19,6 +19,8 @@ const CPU_CLOCK_INTERVAL: number = 200;   // This is in ms (milliseconds) so 100
 const TIMER_IRQ: number = 0;  // Pages 23 (timer), 9 (interrupts), and 561 (interrupt priority).
                               // NOTE: The timer is different from hardware/host clock pulses. Don't confuse these.
 const KEYBOARD_IRQ: number = 1;
+// ...
+const CONTEXT_SWITCH_IRQ: number = 4;
 
 
 //
@@ -33,15 +35,20 @@ var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
-var _PCB_PID: number = 0;
-var _current_PCB_PID = -1;
-var _current_PCB_Section = 0; 
+//var _current_PCB_Section: number = 0; 
 var _PCB: TSOS.PCB;
-var _PCBList: TSOS.PCB[] = [];
+var _PCB_Current: TSOS.PCB;
+var _PCB_Current_PID: number = 0;
+var _PCB_ResidentList: TSOS.PCB[] = [];
+var _PCB_ReadyQ: TSOS.Queue;
+var _Scheduler: any = null;
 
 // Single Step
 var _enabled_Single_Step: boolean = false;
 var _Next_Step: boolean = false;
+
+// Round Robin Quantum
+var _Quantum: number = 6;
 
 
 var _OSclock: number = 0;  // Page 23.
