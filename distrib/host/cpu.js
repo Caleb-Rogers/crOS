@@ -37,6 +37,10 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             /* Execute a Process by Running through instructions
             in Memory and updating CPU & PCB GUI */
+            // update current PCB to running
+            _PCB_Current.State = "Running";
+            // update current PCB to CPU
+            this.updateCPU();
             // Run next op code
             this.runOPcode();
             // Update Current PCB
@@ -44,6 +48,18 @@ var TSOS;
             // Update GUI
             TSOS.Control.updateGUI_PCB_();
             TSOS.Control.updateGUI_CPU_();
+            // if single step, pauses execution
+            if (_enabled_Single_Step) {
+                this.isExecuting = false;
+            }
+        }
+        updateCPU() {
+            this.PC = _PCB_Current.PC;
+            this.IR = _PCB_Current.IR;
+            this.Acc = _PCB_Current.Acc;
+            this.Xreg = _PCB_Current.Xreg;
+            this.Yreg = _PCB_Current.Yreg;
+            this.Zflag = _PCB_Current.Zflag;
         }
         runOPcode() {
             // retrieve op code from memory
@@ -94,43 +110,43 @@ var TSOS;
                     this.SYS();
                     break;
                 default:
-                    _PCBList[_current_PCB_PID].State = "Terminated";
+                    _StdOut.advanceLine();
+                    _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
+                    _StdOut.advanceLine();
+                    _PCB_Current.State = "Terminated";
                     _CPU.isExecuting = false;
             }
         }
         storePCB() {
-            if ((_CPU.isExecuting == false) && (_PCBList[_current_PCB_PID].State == "Terminated")) {
-                _StdOut.advanceLine();
-                _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
-                _StdOut.advanceLine();
-                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] has been Terminated");
+            if ((_CPU.isExecuting == false) && (_PCB_Current.State == "Terminated")) {
+                _StdOut.putText("Process [" + _PCB_Current.PID + "] has been Terminated");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
             }
             else if (_CPU.isExecuting == false) {
-                // update PCB State
-                _PCBList[_current_PCB_PID].PC = this.PC;
-                _PCBList[_current_PCB_PID].IR = this.IR;
-                _PCBList[_current_PCB_PID].Acc = this.Acc;
-                _PCBList[_current_PCB_PID].Xreg = this.Xreg;
-                _PCBList[_current_PCB_PID].Yreg = this.Yreg;
-                _PCBList[_current_PCB_PID].Zflag = this.Zflag;
-                _PCBList[_current_PCB_PID].State = "Completed";
+                // update current PCB
+                _PCB_Current.PC = this.PC;
+                _PCB_Current.IR = this.IR;
+                _PCB_Current.Acc = this.Acc;
+                _PCB_Current.Xreg = this.Xreg;
+                _PCB_Current.Yreg = this.Yreg;
+                _PCB_Current.Zflag = this.Zflag;
+                _PCB_Current.State = "Completed";
                 // output success and new line
                 _StdOut.advanceLine();
-                _StdOut.putText("Process [" + _PCBList[_current_PCB_PID].PID + "] Successfully Completed!");
+                _StdOut.putText("Process [" + _PCB_Current.PID + "] Successfully Completed!");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
             }
             else {
                 // update PCB every instruction
-                _PCBList[_current_PCB_PID].PC = this.PC;
-                _PCBList[_current_PCB_PID].IR = this.IR;
-                _PCBList[_current_PCB_PID].Acc = this.Acc;
-                _PCBList[_current_PCB_PID].Xreg = this.Xreg;
-                _PCBList[_current_PCB_PID].Yreg = this.Yreg;
-                _PCBList[_current_PCB_PID].Zflag = this.Zflag;
-                _PCBList[_current_PCB_PID].State = "Running";
+                _PCB_Current.PC = this.PC;
+                _PCB_Current.IR = this.IR;
+                _PCB_Current.Acc = this.Acc;
+                _PCB_Current.Xreg = this.Xreg;
+                _PCB_Current.Yreg = this.Yreg;
+                _PCB_Current.Zflag = this.Zflag;
+                _PCB_Current.State = "Running";
             }
         }
         /* ============ 6502 Machine Instructions ============ */

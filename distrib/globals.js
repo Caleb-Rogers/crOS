@@ -26,10 +26,12 @@ var _Memory;
 var _MemoryAccessor; //
 // Software (OS)
 var _MemoryManager = null;
-var _current_PCB_PID = 0;
-var _current_PCB_Section = 0;
+//var _current_PCB_Section: number = 0; 
 var _PCB;
-var _PCBList = [];
+var _PCB_Current;
+var _PCB_Current_PID = 0;
+var _PCB_ResidentList = [];
+var _PCB_ReadyQ;
 // Single Step
 var _enabled_Single_Step = false;
 var _Next_Step = false;

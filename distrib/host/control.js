@@ -181,30 +181,30 @@ var TSOS;
             this.clearGUI_PCB_();
             // insert rows for every process stored
             var processTable = document.getElementById("tblPCB");
-            for (var i = 0; i < _PCBList.length; i++) {
+            for (var i = 0; i < _PCB_ResidentList.length; i++) {
                 // Insert a row
                 var row = processTable.insertRow(i + 1);
                 // Insert PCB values
                 var pid_cell = row.insertCell(0);
-                pid_cell.innerHTML = String(_PCBList[i].PID);
+                pid_cell.innerHTML = String(_PCB_ResidentList[i].PID);
                 var pc_cell = row.insertCell(1);
-                pc_cell.innerHTML = _PCBList[i].PC.toString(16).toUpperCase();
+                pc_cell.innerHTML = _PCB_ResidentList[i].PC.toString(16).toUpperCase();
                 var ir_cell = row.insertCell(2);
-                ir_cell.innerHTML = _PCBList[i].IR;
+                ir_cell.innerHTML = _PCB_ResidentList[i].IR;
                 var acc_cell = row.insertCell(3);
-                acc_cell.innerHTML = String(_PCBList[i].Acc);
+                acc_cell.innerHTML = String(_PCB_ResidentList[i].Acc);
                 var x_cell = row.insertCell(4);
-                x_cell.innerHTML = String(_PCBList[i].Xreg);
+                x_cell.innerHTML = String(_PCB_ResidentList[i].Xreg);
                 var y_cell = row.insertCell(5);
-                y_cell.innerHTML = String(_PCBList[i].Yreg);
+                y_cell.innerHTML = String(_PCB_ResidentList[i].Yreg);
                 var z_cell = row.insertCell(6);
-                z_cell.innerHTML = String(_PCBList[i].Zflag);
+                z_cell.innerHTML = String(_PCB_ResidentList[i].Zflag);
                 var priority_cell = row.insertCell(7);
-                priority_cell.innerHTML = String(_PCBList[i].Priority);
+                priority_cell.innerHTML = String(_PCB_ResidentList[i].Priority);
                 var state_cell = row.insertCell(8);
-                state_cell.innerHTML = _PCBList[i].State;
+                state_cell.innerHTML = _PCB_ResidentList[i].State;
                 var location_cell = row.insertCell(9);
-                location_cell.innerHTML = _PCBList[i].Location;
+                location_cell.innerHTML = _PCB_ResidentList[i].Location;
             }
         }
         static clearGUI_PCB_() {

@@ -33,10 +33,12 @@ var _Memory: TSOS.Memory;
 var _MemoryAccessor: TSOS.MemoryAccessor; //
 // Software (OS)
 var _MemoryManager: any = null;
-var _current_PCB_PID: number = 0;
-var _current_PCB_Section: number = 0; 
+//var _current_PCB_Section: number = 0; 
 var _PCB: TSOS.PCB;
-var _PCBList: TSOS.PCB[] = [];
+var _PCB_Current: TSOS.PCB;
+var _PCB_Current_PID: number = 0;
+var _PCB_ResidentList: TSOS.PCB[] = [];
+var _PCB_ReadyQ: TSOS.Queue;
 
 // Single Step
 var _enabled_Single_Step: boolean = false;

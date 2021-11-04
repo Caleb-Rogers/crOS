@@ -387,29 +387,27 @@ var TSOS;
             if (isHexTrue) {
                 _StdOut.putText("[SUCCESS] - Appropriate hex values were entered");
                 _StdOut.advanceLine();
-                // reset CPU
-                _CPU.init();
                 /* Create and Populate New Process Control Block */
-                if (_current_PCB_PID < 3) {
+                if (_PCB_Current_PID < 3) {
                     // create new PCB
                     var PCB = new TSOS.PCB();
                     // assign & increment Process ID
-                    PCB.PID = _current_PCB_PID;
-                    _current_PCB_PID++;
-                    // assign PCB state & memory
+                    PCB.PID = _PCB_Current_PID;
+                    _PCB_Current_PID++;
+                    // assign PCB state & location & priority
                     PCB.State = "Resident";
                     PCB.Location = "Memory";
-                    // add New PCB to Process List
-                    _PCBList.push(PCB);
+                    PCB.Priority = 32;
+                    // add New PCB to Resident List
+                    _PCB_ResidentList.push(PCB);
                     /* Load user program into Memory and update GUI */
                     // load memory
                     _MemoryManager.loadMemory(condensed_input, PCB.PID);
                     // update GUI
                     TSOS.Control.updateGUI_Memory_();
                     TSOS.Control.updateGUI_PCB_();
-                    TSOS.Control.updateGUI_CPU_();
-                    // Output
-                    console.log("PCB (" + String(PCB.PID) + ") was added. There are currently " + String(_PCBList.length) + " stored processes.");
+                    // Console logging & Shell output
+                    console.log("[shellLoad] - PCB (" + String(PCB.PID) + ") was added. There are currently " + String(_PCB_ResidentList.length) + " PCB's in Resident List.");
                     _StdOut.putText("Process ID Number: " + String(PCB.PID));
                 }
                 else {
@@ -417,7 +415,7 @@ var TSOS;
                 }
             }
             else {
-                _StdOut.putText("Please supply only hexadecimal values into the User Program Input");
+                _StdOut.putText("[INPUT ERROR] - Please supply only hexadecimal values into the User Program Input");
             }
         }
         shellRun(args) {
@@ -426,37 +424,25 @@ var TSOS;
                 var valid_pid = false;
                 var pid_input = Number(args[0]);
                 // loop through list of processes to find matching PID
-                for (let i = 0; i < _PCBList.length; i++) {
-                    if (_PCBList[i].PID == pid_input) {
+                for (let i = 0; i < _PCB_ResidentList.length; i++) {
+                    if (_PCB_ResidentList[i].PID == pid_input) {
                         valid_pid = true;
-                        _current_PCB_PID = _PCBList[i].PID;
+                        _PCB_Current = _PCB_ResidentList[i];
                         break;
                     }
                 }
                 // validate the found process's state
-                if (valid_pid && _PCBList[_current_PCB_PID].State == "Resident") {
-                    // determine processes section
-                    if (pid_input == 0) {
-                        _current_PCB_Section = 0;
-                    }
-                    else if (pid_input == 1) {
-                        _current_PCB_Section = 256;
-                    }
-                    else if (pid_input == 2) {
-                        _current_PCB_Section = 512;
-                    }
-                    // update isExecuting
-                    _CPU.isExecuting = true;
+                if (valid_pid && _PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
                     // update process state
-                    _PCBList[_current_PCB_PID].State = "Running";
-                    // disables next stepping
-                    _Next_Step = false;
+                    _PCB_Current.State = "Ready";
+                    // allow process to run in CPU
+                    _CPU.isExecuting = true;
                 }
                 else {
                     if (!valid_pid) {
                         _StdOut.putText("Process [" + pid_input + "] was NOT found. Please enter a valid <PID>.");
                     }
-                    else if (_PCBList[_current_PCB_PID].State != "Resident") {
+                    else if (_PCB_Current.State != "Resident") {
                         _StdOut.putText("Process [" + pid_input + "] is not available to be ran. Make sure the specified process is Resident before running.");
                     }
                 }
@@ -475,29 +461,29 @@ var TSOS;
             _Memory.init();
             TSOS.Control.updateGUI_Memory_();
             TSOS.Control.clearGUI_PCB_();
-            _current_PCB_PID = 0;
-            _PCBList.splice(0, _PCBList.length);
+            _PCB_Current_PID = 0;
+            _PCB_ResidentList.splice(0, _PCB_ResidentList.length);
             _StdOut.putText("All Memory partitions were successfully cleared");
         }
         shellRunAll() {
             // execute all programs at once
-            for (var i = 0; i < _PCBList.length; i++) {
-                if (_PCBList[i].State = "Resident") {
-                    if (_CPU.isExecuting == false) {
-                        // update Resident processes to Running
-                        _PCBList[i].State = "Running";
-                        // update isExecuting
-                        _CPU.isExecuting = true;
-                        // disables next stepping
-                        _Next_Step = false;
-                    }
+            for (var i = 0; i < _PCB_ResidentList.length; i++) {
+                if (_PCB_ResidentList[i].State = "Resident") {
+                    // update process state
+                    _PCB_ResidentList[i].State = "Ready";
+                    // add to Ready Queue
+                    //_PCB_ReadyQ.enqueue(_PCB_ResidentList[i]);
                 }
             }
+            // prepare process to be ran
+            //_PCB_Current = _PCB_ReadyQ.dequeue();
+            // allow process to run in CPU
+            _CPU.isExecuting = true;
         }
         shellPS() {
             // display the PID and state of all processes
-            for (var i = 0; i < _PCBList.length; i++) {
-                _StdOut.putText("Process ID: " + _PCBList[i].PID + " - State: " + _PCBList[i].State);
+            for (var i = 0; i < _PCB_ResidentList.length; i++) {
+                _StdOut.putText("Process ID: " + _PCB_ResidentList[i].PID + " - State: " + _PCB_ResidentList[i].State);
                 _StdOut.advanceLine();
             }
         }
@@ -506,14 +492,14 @@ var TSOS;
             if (args.length = 1) {
                 var pid_input = Number(args[0]);
                 var found = false;
-                for (var i = 0; i < _PCBList.length; i++) {
-                    if (_PCBList[i] == _PCBList[pid_input]) {
+                for (var i = 0; i < _PCB_ResidentList.length; i++) {
+                    if (_PCB_ResidentList[i] == _PCB_ResidentList[pid_input]) {
                         found = true;
                         break;
                     }
                 }
                 if (found) {
-                    _PCBList[pid_input].State = "Terminated";
+                    _PCB_ResidentList[pid_input].State = "Terminated";
                     _CPU.isExecuting = false;
                     TSOS.Control.updateGUI_PCB_();
                     _StdOut.putText("Successfully Terminated Process [" + pid_input + "]");
@@ -528,9 +514,9 @@ var TSOS;
         }
         shellKillAll() {
             // kill all process
-            if (_PCBList.length > 0) {
-                for (var i = 0; i < _PCBList.length; i++) {
-                    _PCBList[i].State = "Terminated";
+            if (_PCB_ResidentList.length > 0) {
+                for (var i = 0; i < _PCB_ResidentList.length; i++) {
+                    _PCB_ResidentList[i].State = "Terminated";
                 }
                 _CPU.isExecuting = false;
                 TSOS.Control.updateGUI_PCB_();

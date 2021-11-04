@@ -16,6 +16,7 @@ var TSOS;
                 hex_value = hex_array.join('');
                 hex_memory.push(hex_value);
             }
+            // Validate size of User Program Input
             if (hex_memory.length > 256) {
                 _StdOut.putText("[MEMORY ALLOCATION EXCEEDED] - User Program Input was too large. Make sure only hex values are used and are less than 256 values.");
             }
@@ -23,29 +24,12 @@ var TSOS;
                 // Update how much memory is being used
                 _Memory.mem_used = hex_memory.length;
                 // Insert hex values into memory depending on section
-                if (pcb_pid == 0) {
-                    var mem_index = 0;
-                    for (var i = 0; i < hex_memory.length; i++) {
-                        _Memory.tsosMemory[mem_index] = hex_memory[i];
-                        mem_index++;
-                    }
+                for (var i = 0; i < hex_memory.length; i++) {
+                    _Memory.tsosMemory[i + _Memory.fetchSectionBase(pcb_pid)] = hex_memory[i];
                 }
-                else if (pcb_pid == 1) {
-                    var mem_index = 256;
-                    for (var i = 0; i < hex_memory.length; i++) {
-                        _Memory.tsosMemory[mem_index] = hex_memory[i];
-                        mem_index++;
-                    }
-                }
-                else if (pcb_pid == 2) {
-                    var mem_index = 512;
-                    for (var i = 0; i < hex_memory.length; i++) {
-                        _Memory.tsosMemory[mem_index] = hex_memory[i];
-                        mem_index++;
-                    }
-                }
-                console.log("User Program Input, Hex formatted: " + hex_memory);
-                console.log((_Memory.mem_used) + " bytes of memory are now being used");
+                // Console logging
+                console.log("[loadMemory] - " + _Memory.mem_used + " bytes of memory loaded");
+                console.log("[loadMemory] - User Program Input: " + hex_memory);
                 return hex_memory;
             }
         }

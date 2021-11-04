@@ -23,7 +23,7 @@ var TSOS;
             this.Location = Location;
         }
         init() {
-            this.PID = _current_PCB_PID;
+            this.PID = _PCB_Current_PID;
             this.PC = 0;
             this.IR = "[empty]";
             this.Acc = 0;
