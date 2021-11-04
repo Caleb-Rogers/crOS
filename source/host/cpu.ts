@@ -49,13 +49,11 @@ module TSOS {
             this.runOPcode();
             // Update Current PCB
             this.storePCB();
+            // update QuantumCounter
+            _PCB_Current.QuantumCounter++;
             // Update GUI
             Control.updateGUI_PCB_();
             Control.updateGUI_CPU_();
-            // if single step, pauses execution
-            if (_enabled_Single_Step) {
-                this.isExecuting = false;
-            }
         }
 
         public updateCPU(): void {
@@ -70,7 +68,6 @@ module TSOS {
         public runOPcode(): void {
             // retrieve op code from memory
             var op_code = _MemoryAccessor.fetchMemory(this.PC);
-            console.log("OP Code returned from Memory: " + op_code);
             
             // determine which assembly instruction
             switch(op_code) {
@@ -137,9 +134,6 @@ module TSOS {
             this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
             this.PC += 2;
             this.IR = "A9";
-            console.log("ACC: " +  parseInt(_MemoryAccessor.fetchMemory(this.PC-1), 16));
-            console.log("fetch mem: " + _MemoryAccessor.fetchMemory(this.PC-1));
-            console.log("P.C.: " + (this.PC-1));
         }
         // AD - LDA  - Load accumulator from memory
         public LDAM(): void {
@@ -244,7 +238,7 @@ module TSOS {
                 _StdOut.putText(this.Yreg.toString(16));
             }
             else if(this.Xreg == 2) {
-                var Y_location = this.Yreg;
+                var Y_location = this.Yreg + _Memory.fetchSectionBase(_PCB_Current.PID);
                 var print = "";
                 while(_Memory.tsosMemory[Y_location] != "00") {
                     print += (String.fromCharCode(parseInt(_Memory.tsosMemory[Y_location], 16)));

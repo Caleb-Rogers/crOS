@@ -10,8 +10,9 @@ module TSOS {
                     public Yreg: number = 0,                // Y Register 
                     public Zflag: number = 0,               // Z Flag
                     public Priority: number = 0,            // Priority
-                    public State: string = "Resident",      // isRunning? State
-                    public Location: string = "Memory",     // Process Location
+                    public State: string = "Resident",      // State
+                    public Location: string = "Memory",     // Location
+                    public QuantumCounter: number = 0,      // number of runs compared to Quantum
                     ) {
         }
 
@@ -26,6 +27,7 @@ module TSOS {
             this.Priority = 0;
             this.State = "Resident";
             this.Location = "Memory";
+            this.QuantumCounter = 0;
         }
     }
 }

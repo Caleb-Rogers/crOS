@@ -472,13 +472,11 @@ var TSOS;
                     // update process state
                     _PCB_ResidentList[i].State = "Ready";
                     // add to Ready Queue
-                    //_PCB_ReadyQ.enqueue(_PCB_ResidentList[i]);
+                    _PCB_ReadyQ.enqueue(_PCB_ResidentList[i]);
                 }
             }
-            // prepare process to be ran
-            //_PCB_Current = _PCB_ReadyQ.dequeue();
-            // allow process to run in CPU
-            _CPU.isExecuting = true;
+            // call scheduler to run processes
+            _Scheduler.determineSchedule();
         }
         shellPS() {
             // display the PID and state of all processes

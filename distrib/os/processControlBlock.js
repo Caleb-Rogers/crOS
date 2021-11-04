@@ -9,8 +9,9 @@ var TSOS;
         Yreg = 0, // Y Register 
         Zflag = 0, // Z Flag
         Priority = 0, // Priority
-        State = "Resident", // isRunning? State
-        Location = "Memory") {
+        State = "Resident", // State
+        Location = "Memory", // Location
+        QuantumCounter = 0) {
             this.PID = PID;
             this.PC = PC;
             this.IR = IR;
@@ -21,6 +22,7 @@ var TSOS;
             this.Priority = Priority;
             this.State = State;
             this.Location = Location;
+            this.QuantumCounter = QuantumCounter;
         }
         init() {
             this.PID = _PCB_Current_PID;
@@ -33,6 +35,7 @@ var TSOS;
             this.Priority = 0;
             this.State = "Resident";
             this.Location = "Memory";
+            this.QuantumCounter = 0;
         }
     }
     TSOS.PCB = PCB;
