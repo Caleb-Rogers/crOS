@@ -83,7 +83,7 @@ var TSOS;
             // Set initial host display upon starting system 
             var today = new Date().toLocaleDateString();
             var runningTime = new Date().toLocaleTimeString();
-            var currentStat = "We have tip off!";
+            var currentStat = "Engines Running";
             document.getElementById("date").innerHTML = today;
             document.getElementById("time").innerHTML = runningTime;
             document.getElementById("status").innerHTML = currentStat;
@@ -131,6 +131,9 @@ var TSOS;
         static dynamicHostTime() {
             var runningTime = new Date().toLocaleTimeString();
             document.getElementById("time").innerHTML = runningTime;
+        }
+        static dynamicHostStatus() {
+            document.getElementById("status").innerHTML = status;
         }
         static BSOD(msg) {
             document.getElementById("display").style.background = "lightblue";
