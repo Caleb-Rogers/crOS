@@ -435,6 +435,7 @@ var TSOS;
                 if (valid_pid && _PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
                     // update process state
                     _PCB_Current.State = "Ready";
+                    _PCB_ReadyQ.enqueue(_PCB_Current);
                     // allow process to run in CPU
                     _CPU.isExecuting = true;
                 }
@@ -468,9 +469,13 @@ var TSOS;
         shellRunAll() {
             for (var i = 0; i < _PCB_ResidentList.length; i++) { // for now...
                 // validate the found process's state
-                if (_PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
+                if (_PCB_ResidentList[i].State == "Resident") {
+                    // iterate through processes
+                    _PCB_Current = _PCB_ResidentList[i];
                     // update process state
                     _PCB_Current.State = "Ready";
+                    // add to ready queue
+                    _PCB_ReadyQ.enqueue(_PCB_Current);
                     // allow process to run in CPU
                     _CPU.isExecuting = true;
                 }
