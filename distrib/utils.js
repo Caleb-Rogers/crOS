@@ -42,6 +42,12 @@ var TSOS;
             }
             return retVal;
         }
+        static decToHexStr(base10) {
+            return base10.toString(16);
+        }
+        static hexStrToDec(base16) {
+            return parseInt(base16, 16);
+        }
     }
     TSOS.Utils = Utils;
 })(TSOS || (TSOS = {}));

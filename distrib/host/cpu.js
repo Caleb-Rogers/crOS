@@ -13,7 +13,7 @@
 var TSOS;
 (function (TSOS) {
     class Cpu {
-        constructor(PC = 0, IR = "[IR]", Acc = 0, Xreg = 0, Yreg = 0, Zflag = 0, isExecuting = false) {
+        constructor(PC = 0, IR = "[IR]", Acc = 0, Xreg = 0, Yreg = 0, Zflag = 0, isExecuting = false, runAll = false) {
             this.PC = PC;
             this.IR = IR;
             this.Acc = Acc;
@@ -21,6 +21,7 @@ var TSOS;
             this.Yreg = Yreg;
             this.Zflag = Zflag;
             this.isExecuting = isExecuting;
+            this.runAll = runAll;
         }
         init() {
             this.PC = 0;
@@ -30,6 +31,7 @@ var TSOS;
             this.Yreg = 0;
             this.Zflag = 0;
             this.isExecuting = false;
+            this.runAll = false;
         }
         cycle() {
             _Kernel.krnTrace('CPU cycle');
@@ -37,19 +39,30 @@ var TSOS;
             // Do the real work here. Be sure to set this.isExecuting appropriately.
             /* Execute a Process by Running through instructions
             in Memory and updating CPU & PCB GUI */
-            // update current PCB to running
-            _PCB_Current.State = "Running";
-            // update current PCB to CPU
-            this.updateCPU();
-            // Run next op code
-            this.runOPcode();
-            // Update Current PCB
-            this.storePCB();
-            // update QuantumCounter
-            _PCB_Current.QuantumCounter++;
-            // Update GUI
-            TSOS.Control.updateGUI_PCB_();
-            TSOS.Control.updateGUI_CPU_();
+            if (_PCB_ReadyQ.getSize() != 0) {
+                // Dequeue from Ready Queue
+                _PCB_Current = _PCB_ReadyQ.dequeue();
+                // update current PCB to running
+                _PCB_Current.State = "Running";
+                console.log(_PCB_Current);
+                // update current PCB to CPU
+                this.updateCPU();
+                // Run next op code
+                this.runOPcode();
+                // Update Current PCB
+                this.storePCB();
+                // update QuantumCounter
+                _PCB_Current.QuantumCounter++;
+                // Update GUI
+                TSOS.Control.updateGUI_PCB_();
+                TSOS.Control.updateGUI_CPU_();
+            }
+            else {
+                _CPU.isExecuting = false;
+                _PCB_Current.State = "Terminated";
+                TSOS.Control.updateGUI_PCB_();
+                _OsShell.putPrompt();
+            }
         }
         updateCPU() {
             this.PC = _PCB_Current.PC;
@@ -107,18 +120,21 @@ var TSOS;
                     this.SYS();
                     break;
                 default:
-                    _StdOut.advanceLine();
-                    _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
-                    _StdOut.advanceLine();
-                    _PCB_Current.State = "Terminated";
-                    _CPU.isExecuting = false;
+                    _PCB_Current.State = "OP Error";
+                    break;
             }
         }
         storePCB() {
-            if ((_CPU.isExecuting == false) && (_PCB_Current.State == "Terminated")) {
+            if ((_PCB_Current.State == "OP Error")) {
+                _PCB_Current.State = "Terminated";
+                _StdOut.advanceLine();
+                _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
+                _StdOut.advanceLine();
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] has been Terminated");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
+                // Dequeue from Ready Queue
+                _PCB_ReadyQ.dequeue();
             }
             else if (_CPU.isExecuting == false) {
                 // update current PCB
@@ -134,8 +150,10 @@ var TSOS;
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] Successfully Completed!");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
+                // Dequeue from Ready Queue
+                _PCB_Current = _PCB_ReadyQ.dequeue();
             }
-            else {
+            else if (_PCB_Current.State == "Running") {
                 // update PCB every instruction
                 _PCB_Current.PC = this.PC;
                 _PCB_Current.IR = this.IR;
@@ -144,6 +162,8 @@ var TSOS;
                 _PCB_Current.Yreg = this.Yreg;
                 _PCB_Current.Zflag = this.Zflag;
                 _PCB_Current.State = "Running";
+                // Enqueue to Ready Queue
+                _PCB_ReadyQ.enqueue(_PCB_Current);
             }
         }
         /* ============ 6502 Machine Instructions ============ */
@@ -227,9 +247,10 @@ var TSOS;
         // D0 - BNE - Branch n bytes if Z flag = 0
         BNE() {
             if (this.Zflag == 0) {
-                var bytes_to_branch = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
+                var bytes_to_branch = 2;
+                bytes_to_branch += parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
                 if (bytes_to_branch + this.PC > 256) {
-                    this.PC = ((this.PC + 1 + bytes_to_branch) % 256) + 1;
+                    this.PC = (this.PC + bytes_to_branch) % 256;
                 }
                 else {
                     this.PC += bytes_to_branch;
@@ -263,8 +284,6 @@ var TSOS;
                     Y_location += 1;
                 }
                 _StdOut.putText(print);
-                _StdOut.advanceLine();
-                _OsShell.putPrompt();
             }
             this.PC += 1;
             this.IR = "FF";

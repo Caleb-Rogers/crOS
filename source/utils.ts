@@ -43,5 +43,14 @@ module TSOS {
             }
             return retVal;
         }
+
+        public static decToHexStr(base10: number) {
+            return base10.toString(16);
+        }
+
+        public static hexStrToDec(base16: string) {
+            return parseInt(base16, 16);
+        }
+        
     }
 }

@@ -14,9 +14,9 @@ module TSOS {
         }
 
         public littleEndianAddress() {
-            var first_val = parseInt(this.fetchMemory(_CPU.PC+1), 16);
-            var second_val = parseInt(this.fetchMemory(_CPU.PC+2), 16);
-            var machine_instruction_loc = first_val + second_val;
+            var lowOrderByte = parseInt(this.fetchMemory(_CPU.PC+1), 16);
+            var highOrderByte = parseInt(this.fetchMemory(_CPU.PC+2), 16);
+            var machine_instruction_loc = lowOrderByte + highOrderByte;
             return machine_instruction_loc;
         }
     }
