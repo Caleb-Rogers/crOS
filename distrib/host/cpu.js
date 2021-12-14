@@ -44,6 +44,7 @@ var TSOS;
                 _PCB_Current = _PCB_ReadyQ.dequeue();
                 // update current PCB to running
                 _PCB_Current.State = "Running";
+                console.log(_PCB_Current);
                 // update current PCB to CPU
                 this.updateCPU();
                 // Run next op code
@@ -131,6 +132,7 @@ var TSOS;
                 _StdOut.advanceLine();
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] has been Terminated");
                 _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 // Dequeue from Ready Queue
                 _PCB_ReadyQ.dequeue();
             }
@@ -144,8 +146,10 @@ var TSOS;
                 _PCB_Current.Zflag = this.Zflag;
                 _PCB_Current.State = "Completed";
                 // output success and new line
+                _StdOut.advanceLine();
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] Successfully Completed!");
                 _StdOut.advanceLine();
+                _OsShell.putPrompt();
                 // Dequeue from Ready Queue
                 _PCB_Current = _PCB_ReadyQ.dequeue();
             }
@@ -198,7 +202,7 @@ var TSOS;
             this.PC += 2;
             this.IR = "A2";
         }
-        // AE - LDX - Load Xregister from memory
+        // AE - LDX - Load X register from memory
         LDXM() {
             var mem_location = _MemoryAccessor.littleEndianAddress();
             this.Xreg = Number(_MemoryAccessor.fetchMemory(mem_location));
@@ -243,9 +247,10 @@ var TSOS;
         // D0 - BNE - Branch n bytes if Z flag = 0
         BNE() {
             if (this.Zflag == 0) {
-                var bytes_to_branch = parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
+                var bytes_to_branch = 2;
+                bytes_to_branch += parseInt(_MemoryAccessor.fetchMemory(this.PC + 1), 16);
                 if (bytes_to_branch + this.PC > 256) {
-                    this.PC = ((this.PC + 1 + bytes_to_branch) % 256) + 1;
+                    this.PC = (this.PC + bytes_to_branch) % 256;
                 }
                 else {
                     this.PC += bytes_to_branch;
@@ -279,8 +284,6 @@ var TSOS;
                     Y_location += 1;
                 }
                 _StdOut.putText(print);
-                _StdOut.advanceLine();
-                _OsShell.putPrompt();
             }
             this.PC += 1;
             this.IR = "FF";
