@@ -21,6 +21,14 @@ var TSOS;
                     console.log("[determineSchedule] - Invalid scheduling algorithm entered");
             }
         }
+        contextSwitch() {
+            for (var i = 0; i < _PCB_ReadyQ.getSize(); i++) {
+                var PCB = _PCB_ReadyQ.dequeue();
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, PCB));
+                _PCB_ReadyQ.enqueue(PCB);
+            }
+        }
+        /* ========== Scheduling algorithms ========== */
         roundRobin() {
             // nothing to execute if empty Ready Queue
             if (_PCB_ReadyQ.getSize() == 0) {
@@ -36,13 +44,6 @@ var TSOS;
             else if (_PCB_ReadyQ.getSize() >= 2) {
                 this.contextSwitch();
                 _CPU.isExecuting = true;
-            }
-        }
-        contextSwitch() {
-            for (var i = 0; i < _PCB_ReadyQ.getSize(); i++) {
-                var PCB = _PCB_ReadyQ.dequeue();
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, PCB));
-                _PCB_ReadyQ.enqueue(PCB);
             }
         }
     }

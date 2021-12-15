@@ -11,7 +11,7 @@ var TSOS;
         Priority = 0, // Priority
         State = "Resident", // State
         Location = "Memory", // Location
-        QuantumCounter = 0) {
+        section = 0, QuantumCounter = 0) {
             this.PID = PID;
             this.PC = PC;
             this.IR = IR;
@@ -22,10 +22,11 @@ var TSOS;
             this.Priority = Priority;
             this.State = State;
             this.Location = Location;
+            this.section = section;
             this.QuantumCounter = QuantumCounter;
         }
         init() {
-            this.PID = _PCB_Current_PID;
+            this.PID = _PCB_Counter;
             this.PC = 0;
             this.IR = "[empty]";
             this.Acc = 0;
@@ -35,6 +36,7 @@ var TSOS;
             this.Priority = 0;
             this.State = "Resident";
             this.Location = "Memory";
+            this.section = 0;
             this.QuantumCounter = 0;
         }
     }

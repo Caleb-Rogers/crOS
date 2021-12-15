@@ -22,6 +22,17 @@ module TSOS {
             }
         }
 
+        public contextSwitch(): void {
+
+            for (var i=0; i<_PCB_ReadyQ.getSize(); i++) {
+                var PCB = _PCB_ReadyQ.dequeue();
+                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, PCB));
+                _PCB_ReadyQ.enqueue(PCB);
+            }
+        }
+
+
+        /* ========== Scheduling algorithms ========== */
         public roundRobin(): void {
             // nothing to execute if empty Ready Queue
             if (_PCB_ReadyQ.getSize() == 0) {
@@ -37,15 +48,6 @@ module TSOS {
             else if (_PCB_ReadyQ.getSize() >= 2) {
                 this.contextSwitch();
                 _CPU.isExecuting = true;
-            }
-        }
-
-        public contextSwitch(): void {
-
-            for (var i=0; i<_PCB_ReadyQ.getSize(); i++) {
-                var PCB = _PCB_ReadyQ.dequeue();
-                _KernelInterruptQueue.enqueue(new TSOS.Interrupt(CONTEXT_SWITCH_IRQ, PCB));
-                _PCB_ReadyQ.enqueue(PCB);
             }
         }
 

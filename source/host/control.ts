@@ -211,7 +211,6 @@ module TSOS {
                 mem_input += "</tr>";
             }
             memory_table.innerHTML = mem_input;
-            console.log("[Memory Updated]");
         }
 
         public static updateGUI_PCB_() {
@@ -230,13 +229,13 @@ module TSOS {
                 var ir_cell = row.insertCell(2);
                 ir_cell.innerHTML = _PCB_ResidentList[i].IR;
                 var acc_cell = row.insertCell(3);
-                acc_cell.innerHTML = String(_PCB_ResidentList[i].Acc);
+                acc_cell.innerHTML = _PCB_ResidentList[i].Acc.toString(16).toUpperCase();
                 var x_cell = row.insertCell(4);
-                x_cell.innerHTML = String(_PCB_ResidentList[i].Xreg);
+                x_cell.innerHTML = _PCB_ResidentList[i].Xreg.toString(16).toUpperCase();
                 var y_cell = row.insertCell(5);
-                y_cell.innerHTML = String(_PCB_ResidentList[i].Yreg);
+                y_cell.innerHTML = _PCB_ResidentList[i].Yreg.toString(16).toUpperCase();
                 var z_cell = row.insertCell(6);
-                z_cell.innerHTML = String(_PCB_ResidentList[i].Zflag);
+                z_cell.innerHTML = _PCB_ResidentList[i].Zflag.toString(16).toUpperCase();
                 var priority_cell = row.insertCell(7);
                 priority_cell.innerHTML = String(_PCB_ResidentList[i].Priority);
                 var state_cell = row.insertCell(8);
@@ -256,13 +255,11 @@ module TSOS {
 
         public static updateGUI_CPU_(): void {
             document.getElementById("cpuPC").innerHTML = _CPU.PC.toString(16).toUpperCase();
-            document.getElementById("cpuIR").innerHTML = _CPU.IR;
-            document.getElementById("cpuACC").innerHTML = String(_CPU.Acc);
-            document.getElementById("cpuX").innerHTML = String(_CPU.Xreg);
-            document.getElementById("cpuY").innerHTML = String(_CPU.Yreg);
-            document.getElementById("cpuZ").innerHTML = String(_CPU.Zflag);
-
-            console.log("[CPU Updated]");
+            document.getElementById("cpuIR").innerHTML = _CPU.IR
+            document.getElementById("cpuACC").innerHTML = _CPU.Acc.toString(16).toUpperCase();
+            document.getElementById("cpuX").innerHTML = _CPU.Xreg.toString(16).toUpperCase();
+            document.getElementById("cpuY").innerHTML = _CPU.Yreg.toString(16).toUpperCase();
+            document.getElementById("cpuZ").innerHTML = _CPU.Zflag.toString(16).toUpperCase();
         }
     }
 }

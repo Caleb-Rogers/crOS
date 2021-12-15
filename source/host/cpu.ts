@@ -49,9 +49,6 @@ module TSOS {
                 _PCB_Current = _PCB_ReadyQ.dequeue();
                 // update current PCB to running
                 _PCB_Current.State = "Running";
-
-                console.log(_PCB_Current);
-
                 // update current PCB to CPU
                 this.updateCPU();
                 // Run next op code
@@ -83,7 +80,7 @@ module TSOS {
 
         public runOPcode(): void {
             // retrieve op code from memory
-            var op_code = _MemoryAccessor.fetchMemory(this.PC);
+            var op_code = _MemoryAccessor.fetchMemory(_PCB_Current.PC, _PCB_Current.section);
             
             // determine which assembly instruction
             switch(op_code) {
@@ -102,24 +99,23 @@ module TSOS {
                 case "EE": this.INC();      break;
                 case "FF": this.SYS();      break;
                 default:
-                    _PCB_Current.State = "OP Error";
+                    _PCB_Current.State = "Error";
                     break;
                 }
         }
 
         public storePCB(): void {
-            if ((_PCB_Current.State == "OP Error")) {
+            if ((_PCB_Current.State == "Error")) {
                 _PCB_Current.State = "Terminated";
                 _StdOut.advanceLine();
-                _StdOut.putText("Invalid Op Code: " + _MemoryAccessor.fetchMemory(this.PC));
+                _StdOut.putText("Error Occurred at Op Code: " + _PCB_Current.IR);
                 _StdOut.advanceLine();
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] has been Terminated");
                 _StdOut.advanceLine();
-                _OsShell.putPrompt();
                 // Dequeue from Ready Queue
                 _PCB_ReadyQ.dequeue();
             }
-            else if(_CPU.isExecuting == false) {
+            else if (_CPU.isExecuting == false) {
                 // update current PCB
                 _PCB_Current.PC = this.PC;
                 _PCB_Current.IR = this.IR;
@@ -133,8 +129,14 @@ module TSOS {
                 _StdOut.putText("Process [" + _PCB_Current.PID + "] Successfully Completed!");
                 _StdOut.advanceLine();
                 _OsShell.putPrompt();
+
+                    // remove from resident list
+                    //_PCB_ResidentList.splice(_PCB_Current.PID, 1);     // this was breaking stuff
+
                 // Dequeue from Ready Queue
                 _PCB_Current = _PCB_ReadyQ.dequeue();
+                // update PCB GUI
+                Control.updateGUI_PCB_();
             }
             else if (_PCB_Current.State == "Running") {
                 // update PCB every instruction
@@ -154,56 +156,61 @@ module TSOS {
         /* ============ 6502 Machine Instructions ============ */
         // A9 - LDA - Load accumulator with constant
         public LDAC(): void {
-            this.Acc = parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
+            this.Acc = parseInt(_MemoryAccessor.fetchMemory((_PCB_Current.PC+1), _PCB_Current.section), 16);
             this.PC += 2;
             this.IR = "A9";
         }
         // AD - LDA  - Load accumulator from memory
         public LDAM(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
-            this.Acc = Number(_MemoryAccessor.fetchMemory(mem_location));
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
+            this.Acc = parseInt(_MemoryAccessor.fetchMemory((mem_location), _PCB_Current.section), 16);
             this.PC += 3;
             this.IR = "AD";
         }
         // 8D - STA  - Store accumulator in memory
         public STA(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
             var acc_to_mem = this.Acc.toString(16).toUpperCase();
-            _Memory.tsosMemory[mem_location] = acc_to_mem;
+            if (mem_location <= _MemoryAccessor.fetchSectionLimit(_PCB_Current.section)) {
+                _Memory.tsosMemory[mem_location] = acc_to_mem;
+            }
+            else {
+                _PCB_Current.State = "Error";
+            }
             Control.updateGUI_Memory_();
             this.PC += 3;
             this.IR = "8D";
         }
         // 6D - ADC - Add with Carry
         public ADC(): void {
-            var memory = _MemoryAccessor.fetchMemory(_MemoryAccessor.littleEndianAddress());      
+            var memory = _MemoryAccessor.fetchMemory((_MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section)), _PCB_Current.section);      
             this.Acc += parseInt(memory, 16);
             this.PC += 3;
             this.IR = "6D";
         }
         // A2 - LDX - Load X register with constant
         public LDXC(): void {
-            this.Xreg = parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
+            this.Xreg = parseInt(_MemoryAccessor.fetchMemory((_PCB_Current.PC+1), _PCB_Current.section), 16);
             this.PC += 2;
             this.IR = "A2";
         }
         // AE - LDX - Load X register from memory
         public LDXM(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
-            this.Xreg = Number(_MemoryAccessor.fetchMemory(mem_location));
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
+            this.Xreg = parseInt(_MemoryAccessor.fetchMemory((mem_location), _PCB_Current.section), 16);
             this.PC += 3;
             this.IR = "AE";
         }
         // A0 - LDY - Load Y register with constant 
         public LDYC(): void {
-            this.Yreg = parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
+            this.Yreg = parseInt(_MemoryAccessor.fetchMemory((_PCB_Current.PC+1), _PCB_Current.section), 16);
             this.PC += 2;
             this.IR = "A0";
         }
         // AC - LDY - Load Y register from memory
         public LDYM(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
-            this.Yreg = Number(_MemoryAccessor.fetchMemory(mem_location));
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
+            this.Yreg = parseInt(_MemoryAccessor.fetchMemory((mem_location), _PCB_Current.section), 16);
             this.PC += 3;
             this.IR = "AC";
         }
@@ -219,8 +226,8 @@ module TSOS {
         }
         // EC - CPX - Compare a byte in memory to X reg, sets z flag if equal
         public CPX(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
-            if (parseInt(_MemoryAccessor.fetchMemory(mem_location), 16) == this.Xreg) {
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
+            if (parseInt(_MemoryAccessor.fetchMemory((mem_location), _PCB_Current.section), 16) == this.Xreg) {
                 this.Zflag = 1;
             }
             else {
@@ -233,7 +240,7 @@ module TSOS {
         public BNE(): void {
             if (this.Zflag == 0) {
                 var bytes_to_branch = 2;
-                bytes_to_branch += parseInt(_MemoryAccessor.fetchMemory(this.PC+1), 16);
+                bytes_to_branch += parseInt(_MemoryAccessor.fetchMemory((_PCB_Current.PC+1), _PCB_Current.section), 16);
                 if (bytes_to_branch+this.PC > 256) {
                     this.PC = (this.PC + bytes_to_branch) % 256;
                 } 
@@ -248,8 +255,8 @@ module TSOS {
         }
         // EE - INC - Increment value of a byte
         public INC(): void {
-            var mem_location = _MemoryAccessor.littleEndianAddress();
-            var increment = parseInt(_MemoryAccessor.fetchMemory(mem_location), 16);
+            var mem_location = _MemoryAccessor.littleEndianAddress(_PCB_Current.PC, _PCB_Current.section);
+            var increment = parseInt(_MemoryAccessor.fetchMemory((mem_location), _PCB_Current.section), 16);
             increment += 1;
             _Memory.tsosMemory[mem_location] = increment.toString(16);
             Control.updateGUI_Memory_();
@@ -262,7 +269,7 @@ module TSOS {
                 _StdOut.putText(this.Yreg.toString(16));
             }
             else if(this.Xreg == 2) {
-                var Y_location = this.Yreg + _Memory.fetchSectionBase(_PCB_Current.PID);
+                var Y_location = this.Yreg + _MemoryAccessor.fetchSectionBase(_PCB_Current.section);
                 var print = "";
                 while(_Memory.tsosMemory[Y_location] != "00") {
                     print += (String.fromCharCode(parseInt(_Memory.tsosMemory[Y_location], 16)));

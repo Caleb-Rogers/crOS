@@ -388,21 +388,25 @@ var TSOS;
                 _StdOut.putText("[SUCCESS] - Appropriate hex values were entered");
                 _StdOut.advanceLine();
                 /* Create and Populate New Process Control Block */
-                if (_PCB_Current_PID < 3) {
+                if (_PCB_Counter < 3) {
                     // create new PCB
                     var PCB = new TSOS.PCB();
-                    // assign & increment Process ID
-                    PCB.PID = _PCB_Current_PID;
-                    _PCB_Current_PID++;
+                    // assign PID & section
+                    PCB.PID = _PCB_Counter;
+                    PCB.section = _PCB_Counter;
                     // assign PCB state & location & priority
                     PCB.State = "Resident";
                     PCB.Location = "Memory";
                     PCB.Priority = 32;
                     // add New PCB to Resident List
-                    _PCB_ResidentList.push(PCB);
+                    _PCB_ResidentList[_PCB_Counter] = PCB;
+                    // increment Process Counter
+                    _PCB_Counter++;
                     /* Load user program into Memory and update GUI */
+                    // clear memory
+                    _MemoryManager.clearMemorySection(PCB.section);
                     // load memory
-                    _MemoryManager.loadMemory(condensed_input, PCB.PID);
+                    _MemoryManager.loadMemory(condensed_input, PCB.section);
                     // update GUI
                     TSOS.Control.updateGUI_Memory_();
                     TSOS.Control.updateGUI_PCB_();
@@ -420,7 +424,7 @@ var TSOS;
         }
         shellRun(args) {
             // validate for appropriate user input
-            if (args.length = 1) {
+            if ((args.length == 1) && !(isNaN(Number(args[0])))) {
                 var valid_pid = false;
                 var pid_input = Number(args[0]);
                 // loop through list of processes to find matching PID
@@ -435,7 +439,13 @@ var TSOS;
                 if (valid_pid && _PCB_ResidentList[_PCB_Current.PID].State == "Resident") {
                     // update process state
                     _PCB_Current.State = "Ready";
+                    // update Instruction Register
+                    _PCB_Current.IR = _MemoryAccessor.fetchMemory(_PCB_Current.PC, _PCB_Current.section);
+                    // push process to ready queue
                     _PCB_ReadyQ.enqueue(_PCB_Current);
+                    // update GUI
+                    TSOS.Control.updateGUI_CPU_();
+                    TSOS.Control.updateGUI_PCB_();
                     // allow process to run in CPU
                     _CPU.isExecuting = true;
                 }
@@ -462,7 +472,7 @@ var TSOS;
             _Memory.init();
             TSOS.Control.updateGUI_Memory_();
             TSOS.Control.clearGUI_PCB_();
-            _PCB_Current_PID = 0;
+            _PCB_Counter = 0;
             _PCB_ResidentList.splice(0, _PCB_ResidentList.length);
             _StdOut.putText("All Memory partitions were successfully cleared");
         }

@@ -32,13 +32,13 @@ const CONTEXT_SWITCH_IRQ: number = 4;
 // Hardware (host)
 var _CPU: TSOS.Cpu;  // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory: TSOS.Memory;
-var _MemoryAccessor: TSOS.MemoryAccessor; //
+var _MemoryAccessor: TSOS.MemoryAccessor;
 // Software (OS)
 var _MemoryManager: any = null;
 //var _current_PCB_Section: number = 0; 
 var _PCB: TSOS.PCB;
 var _PCB_Current: TSOS.PCB;
-var _PCB_Current_PID: number = 0;
+var _PCB_Counter: number = 0;
 var _PCB_ResidentList: TSOS.PCB[] = [];
 var _PCB_ReadyQ: TSOS.Queue;
 var _Scheduler: any = null;

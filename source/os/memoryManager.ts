@@ -5,7 +5,7 @@ module TSOS {
         constructor() {}
 
         // Populate Memory with User Program Input
-        public loadMemory(user_prog_input, pcb_pid) {
+        public loadMemory(user_prog_input, pcb_section) {
             // Split user input into array of characters
             var chars_input = user_prog_input.split('');
             // Manipulate characters into an array of Hex string doubles
@@ -27,7 +27,7 @@ module TSOS {
                 _Memory.mem_used = hex_memory.length;
                 // Insert hex values into memory depending on section
                 for (var i=0; i<hex_memory.length; i++) {
-                    _Memory.tsosMemory[i + _Memory.fetchSectionBase(pcb_pid)] = hex_memory[i];
+                    _Memory.tsosMemory[i + _MemoryAccessor.fetchSectionBase(pcb_section)] = hex_memory[i];
                 }
                 // Console logging
                 console.log("[loadMemory] - " + _Memory.mem_used + " bytes of memory loaded");
@@ -35,6 +35,15 @@ module TSOS {
 
                 return hex_memory;
             }
+        }
+
+        public clearMemorySection(section: number) {
+            var begin = _MemoryAccessor.fetchSectionBase(section);
+            var end = _MemoryAccessor.fetchSectionLimit(section);
+            for (let i=begin; i<=end; i++) {
+                _Memory.tsosMemory[i] = "00";
+            }
+            Control.updateGUI_Memory_();
         }
     }
 }

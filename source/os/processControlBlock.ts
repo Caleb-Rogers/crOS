@@ -12,12 +12,13 @@ module TSOS {
                     public Priority: number = 0,            // Priority
                     public State: string = "Resident",      // State
                     public Location: string = "Memory",     // Location
+                    public section: number = 0,
                     public QuantumCounter: number = 0,      // number of runs compared to Quantum
                     ) {
         }
 
         public init(): void {
-            this.PID = _PCB_Current_PID;
+            this.PID = _PCB_Counter;
             this.PC = 0;
             this.IR = "[empty]";
             this.Acc = 0;
@@ -27,6 +28,7 @@ module TSOS {
             this.Priority = 0;
             this.State = "Resident";
             this.Location = "Memory";
+            this.section = 0;
             this.QuantumCounter = 0;
         }
     }

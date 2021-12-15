@@ -25,13 +25,13 @@ const CONTEXT_SWITCH_IRQ = 4;
 // Hardware (host)
 var _CPU; // Utilize TypeScript's type annotation system to ensure that _CPU is an instance of the Cpu class.
 var _Memory;
-var _MemoryAccessor; //
+var _MemoryAccessor;
 // Software (OS)
 var _MemoryManager = null;
 //var _current_PCB_Section: number = 0; 
 var _PCB;
 var _PCB_Current;
-var _PCB_Current_PID = 0;
+var _PCB_Counter = 0;
 var _PCB_ResidentList = [];
 var _PCB_ReadyQ;
 var _Scheduler = null;
