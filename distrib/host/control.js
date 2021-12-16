@@ -75,6 +75,8 @@ var TSOS;
             _Memory.init();
             // and a way to access it
             _MemoryAccessor = new TSOS.MemoryAccessor();
+            // Create and initialize Disk
+            _Virtual_Disk = new TSOS.Disk();
             // ... then set the host clock pulse ...
             _hardwareClockID = setInterval(TSOS.Devices.hostClockPulse, CPU_CLOCK_INTERVAL);
             // .. and call the OS Kernel Bootstrap routine.
@@ -223,6 +225,54 @@ var TSOS;
             document.getElementById("cpuX").innerHTML = _CPU.Xreg.toString(16).toUpperCase();
             document.getElementById("cpuY").innerHTML = _CPU.Yreg.toString(16).toUpperCase();
             document.getElementById("cpuZ").innerHTML = _CPU.Zflag.toString(16).toUpperCase();
+        }
+        static updateGUI_Disk_() {
+            var sessionStorageData;
+            var diskTblRowCount = 1;
+            // clear Disk table
+            this.clearGUI_Disk_();
+            // get disk table
+            var diskTbl = document.getElementById("tblDisk");
+            // header info
+            var diskHeader = diskTbl.insertRow(0);
+            var diskHeaderTSB = diskHeader.insertCell(0);
+            diskHeaderTSB.innerHTML = "T:S:B";
+            var diskHeaderUsed = diskHeader.insertCell(1);
+            diskHeaderUsed.innerHTML = "Used";
+            var diskHeaderNext = diskHeader.insertCell(2);
+            diskHeaderNext.innerHTML = "Next";
+            var diskHeaderData = diskHeader.insertCell(3);
+            diskHeaderData.innerHTML = "Data";
+            // populate fields
+            for (var i = 0; i < _Virtual_Disk.tracks; i++) {
+                for (var j = 0; j < _Virtual_Disk.sectors; j++) {
+                    for (var k = 0; k < _Virtual_Disk.blocks; k++) {
+                        // utilize HTML5 session storage
+                        sessionStorageData = sessionStorage.getItem(i + ":" + j + ":" + k).split(",");
+                        // fill rows with cells
+                        var diskTblRow = diskTbl.insertRow(diskTblRowCount);
+                        diskTblRowCount++;
+                        var diskTSBCell = diskTblRow.insertCell(0);
+                        diskTSBCell.innerHTML = i + ":" + j + ":" + k;
+                        var diskUsedCell = diskTblRow.insertCell(1);
+                        diskUsedCell.innerHTML = sessionStorageData[0].valueOf();
+                        var diskNextCell = diskTblRow.insertCell(2);
+                        diskNextCell.innerHTML = sessionStorageData[1] + ":" + sessionStorageData[2] + ":" + sessionStorageData[3];
+                        var diskDataCell = diskTblRow.insertCell(3);
+                        var diskDataInput = new String();
+                        for (var x = 4; x < sessionStorageData.length; x++) { //Does someone know the commonly used letter in a 4th for loop? Ill use w cause its a pretty cool letter
+                            diskDataInput += sessionStorageData[x].valueOf();
+                        }
+                        diskDataCell.innerHTML = diskDataInput.valueOf();
+                    }
+                }
+            }
+        }
+        static clearGUI_Disk_() {
+            var diskTable = document.getElementById("tblDisk");
+            for (var i = diskTable.rows.length; i > 1; i--) {
+                diskTable.deleteRow(i - 1);
+            }
         }
     }
     TSOS.Control = Control;

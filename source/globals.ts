@@ -42,6 +42,9 @@ var _PCB_Counter: number = 0;
 var _PCB_ResidentList: TSOS.PCB[] = [];
 var _PCB_ReadyQ: TSOS.Queue;
 var _Scheduler: any = null;
+var _Virtual_Disk: TSOS.Disk;
+var _Disk_Storage_Session: String[];
+var _Disk_Formatted: boolean = false;
 
 // Single Step
 var _enabled_Single_Step: boolean = false;
@@ -83,6 +86,7 @@ var _SarcasticMode: boolean = false;
 
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver: TSOS.DeviceDriverKeyboard  = null;
+var _krnDiskDriver: TSOS.DeviceDriverDisk = null;
 
 var _hardwareClockID: number = null;
 

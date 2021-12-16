@@ -85,6 +85,30 @@ var TSOS;
             // quantum <int>
             sc = new TSOS.ShellCommand(this.shellQuantum, "quantum", "<int> - sets the Round Robin quantum");
             this.commandList[this.commandList.length] = sc;
+            // create <filename>
+            sc = new TSOS.ShellCommand(this.shellCreateFile, "create", "<filename> - creates a file and displays a message denoting success or failure");
+            this.commandList[this.commandList.length] = sc;
+            // read <filename>
+            sc = new TSOS.ShellCommand(this.shellReadFile, "read", "<filename> - reads and writes the contents of a specified file");
+            this.commandList[this.commandList.length] = sc;
+            // writes <filename>
+            sc = new TSOS.ShellCommand(this.shellWriteFile, "write", '<filename> "data" - writes the data inside the quotes to a specified file');
+            this.commandList[this.commandList.length] = sc;
+            // delete <filename>
+            sc = new TSOS.ShellCommand(this.shellDeleteFile, "delete", "<filename> - removes a specified file from storage");
+            this.commandList[this.commandList.length] = sc;
+            // format
+            sc = new TSOS.ShellCommand(this.shellFormatFile, "format", "- initializes all blocks in all the sectors in all tracks");
+            this.commandList[this.commandList.length] = sc;
+            // ls
+            sc = new TSOS.ShellCommand(this.shellList, "ls", "- list all files currently stored on the disk");
+            this.commandList[this.commandList.length] = sc;
+            // setschedule [rr, fcfs, priority]
+            sc = new TSOS.ShellCommand(this.shellSetSchedule, "setschedule", "[rr, fcfs, priority] - specifies which CPU scheduling algorithm will be used");
+            this.commandList[this.commandList.length] = sc;
+            // getschedule
+            sc = new TSOS.ShellCommand(this.shellGetSchedule, "getschedule", "- returns the currently selected cpu scheduling algorithm");
+            this.commandList[this.commandList.length] = sc;
             // Display the initial prompt.
             this.putPrompt();
         }
@@ -502,7 +526,7 @@ var TSOS;
         }
         shellKill(args) {
             // kill one process
-            if (args.length = 1) {
+            if (args.length == 1) {
                 var pid_input = Number(args[0]);
                 var found = false;
                 for (var i = 0; i < _PCB_ResidentList.length; i++) {
@@ -541,13 +565,46 @@ var TSOS;
         }
         shellQuantum(args) {
             // let the user set the Round Robin quantum 
-            if ((args.length = 1) && !(isNaN(Number(args[0])))) {
+            if ((args.length == 1) && !(isNaN(Number(args[0])))) {
                 _Quantum = parseInt(args[0]);
                 _StdOut.putText("Successfully Set the Round Robin Quantum to " + String(_Quantum));
             }
             else {
                 _StdOut.putText("Supplied <Quantum> was not valid. Please supply an integer that will act as the Round Robin Quantum and measured in CPU cycles.");
             }
+        }
+        shellCreateFile(args) {
+            if (_Disk_Formatted) {
+                if (args.length == 1) {
+                    _krnDiskDriver.createFile(args[0]);
+                    _StdOut.putText("Successfully created file " + args[0]);
+                }
+                else {
+                    _StdOut.putText("Supplied <filename> was not valid.");
+                }
+            }
+        }
+        shellReadFile(args) {
+        }
+        shellWriteFile(args) {
+        }
+        shellDeleteFile(args) {
+        }
+        shellFormatFile(args) {
+            if (_Disk_Formatted) {
+                _StdOut.putText("Disk has already been formatted...");
+            }
+            else {
+                _krnDiskDriver.formatDisk();
+                _Disk_Formatted = true;
+                _StdOut.putText("Successfully formatted disk!");
+            }
+        }
+        shellList(args) {
+        }
+        shellSetSchedule(args) {
+        }
+        shellGetSchedule(args) {
         }
     }
     TSOS.Shell = Shell;

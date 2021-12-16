@@ -35,6 +35,9 @@ var _PCB_Counter = 0;
 var _PCB_ResidentList = [];
 var _PCB_ReadyQ;
 var _Scheduler = null;
+var _Virtual_Disk;
+var _Disk_Storage_Session;
+var _Disk_Formatted = false;
 // Single Step
 var _enabled_Single_Step = false;
 var _Next_Step = false;
@@ -63,6 +66,7 @@ var _OsShell;
 var _SarcasticMode = false;
 // Global Device Driver Objects - page 12
 var _krnKeyboardDriver = null;
+var _krnDiskDriver = null;
 var _hardwareClockID = null;
 // For testing (and enrichment)...
 var Glados = null; // This is the function Glados() in glados-ip*.js http://alanclasses.github.io/TSOS/test/ .
